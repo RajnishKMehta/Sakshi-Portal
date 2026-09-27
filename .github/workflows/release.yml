@@ -1,0 +1,102 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Publish this App release?"
+        type: choice
+        required: true
+        default: Cancel
+        options:
+          - Publish
+          - Cancel
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+      prerelease: ${{ steps.meta.outputs.prerelease }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Confirm Release
+        run: |
+          if [ "${{ inputs.confirm }}" != "Publish" ]; then
+            echo "Release cancelled."
+            exit 1
+          fi
+
+      - name: Read App Version
+        id: version
+        run: |
+          VCODE=$(grep '^[[:space:]]*versionCode[[:space:]]*=' app/build.gradle.kts \
+            | sed -E 's/.*=[[:space:]]*([0-9]+).*/\1/')
+
+          VSUFFIX=$(grep '^[[:space:]]*versionName[[:space:]]*=' app/build.gradle.kts \
+            | sed -E \
+              -e 's/.*versionCode\.toString\(\)[[:space:]]*\+[[:space:]]*"([^"]*)".*/\1/' \
+              -e 's/.*"\$\{versionCode\}([^"]*)".*/\1/' \
+            | head -n 1)
+
+          VSUFFIX="${VSUFFIX:-}"
+          VERSION="${VCODE}${VSUFFIX}"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare Release Metadata
+        id: meta
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="$VERSION"
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+          if [[ "$VERSION" =~ -(alpha|beta|rc|snapshot|dev|preview|milestone|m[0-9]+)([.-][0-9]+)?$ ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check Existing Tag
+        run: |
+          git fetch --tags
+
+          if git rev-parse --verify "refs/tags/${{ steps.meta.outputs.tag }}" >/dev/null 2>&1; then
+            echo "Tag '${{ steps.meta.outputs.tag }}' already exists."
+            exit 1
+          fi
+
+      - name: Release Summary
+        run: |
+          echo "Version     : ${{ steps.version.outputs.version }}"
+          echo "Tag         : ${{ steps.meta.outputs.tag }}"
+          echo "Prerelease  : ${{ steps.meta.outputs.prerelease }}"
+
+  publish:
+    name: Publish App
+    needs: prepare
+
+    uses: ./.github/workflows/publish.yml
+
+    with:
+      version: ${{ needs.prepare.outputs.version }}
+      tag: ${{ needs.prepare.outputs.tag }}
+      prerelease: ${{ needs.prepare.outputs.prerelease }}
+
+    secrets: inherit

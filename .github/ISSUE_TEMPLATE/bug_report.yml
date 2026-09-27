@@ -1,0 +1,41 @@
+name: Bug Report
+description: File a bug report to help us improve Sakshi Portal
+title: "[BUG]: "
+labels: ["bug"]
+assignees: [RajnishKMehta]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please fill out the sections below.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe your bug here...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: How do we reproduce this issue?
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. See error...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+  - type: input
+    id: environment
+    attributes:
+      label: Device and OS Version
+      placeholder: e.g. Pixel 7, Android 14
+    validations:
+      required: true

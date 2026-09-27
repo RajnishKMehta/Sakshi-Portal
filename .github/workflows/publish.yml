@@ -1,0 +1,103 @@
+name: Publish App Release
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: App version
+        required: true
+        type: string
+
+      tag:
+        description: Git tag
+        required: true
+        type: string
+
+      prerelease:
+        description: Is prerelease
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-${{ inputs.tag }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Publish Sakshi Portal
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Validate App Version
+        run: |
+          VCODE=$(grep '^[[:space:]]*versionCode[[:space:]]*=' app/build.gradle.kts \
+            | sed -E 's/.*=[[:space:]]*([0-9]+).*/\1/')
+
+          VSUFFIX=$(grep '^[[:space:]]*versionName[[:space:]]*=' app/build.gradle.kts \
+            | sed -E \
+              -e 's/.*versionCode\.toString\(\)[[:space:]]*\+[[:space:]]*"([^"]*)".*/\1/' \
+              -e 's/.*"\$\{versionCode\}([^"]*)".*/\1/' \
+            | head -n 1)
+
+          VSUFFIX="${VSUFFIX:-}"
+          VERSION="${VCODE}${VSUFFIX}"
+
+          echo "Build version : $VERSION"
+          echo "Input version : ${{ inputs.version }}"
+
+          if [ "$VERSION" != "${{ inputs.version }}" ]; then
+            echo "Version mismatch."
+            exit 1
+          fi
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release.keystore
+
+      - name: Build Release Artifacts
+        env:
+          KEYSTORE_FILE: release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: ./gradlew check assembleRelease
+
+      - name: Clean up Keystore
+        if: always()
+        run: rm -f app/release.keystore
+
+      - name: Create Git Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag "${{ inputs.tag }}"
+          git push origin "${{ inputs.tag }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: ${{ inputs.tag }}
+          files: |
+            app/build/outputs/apk/release/*.apk
+          draft: false
+          prerelease: ${{ inputs.prerelease == 'true' }}
+          generate_release_notes: true
