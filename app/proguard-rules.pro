@@ -19,3 +19,13 @@
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
+
+# Debug Logger Optimization
+-assumenosideeffects class rajnishkmehta.sakshi.portal.debug.DebugLogger {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+    public static *** w(...);
+    public static *** e(...);
+    public static *** init(...);
+}

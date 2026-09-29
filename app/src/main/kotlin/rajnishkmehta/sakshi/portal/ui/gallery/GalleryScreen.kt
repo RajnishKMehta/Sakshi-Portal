@@ -48,7 +48,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
 import kotlinx.coroutines.delay
+import rajnishkmehta.sakshi.portal.debug.DebugLogger
 
 enum class MediaType {
     ALL, PHOTO, VIDEO, AUDIO, OTHER
@@ -74,6 +76,7 @@ fun GalleryScreen(modifier: Modifier = Modifier, onSettingsClick: () -> Unit = {
     var isDynamicColorEnabled by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
+        try { Log.i(tag = "GalleryScreen", message = "Loading gallery items") } catch (e: Exception) {}
         delay(1000) // Simulate network/db load
         val dummyData = List(30) { index ->
             DummyMediaItem(
