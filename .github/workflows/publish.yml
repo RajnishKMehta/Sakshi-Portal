@@ -83,6 +83,18 @@ jobs:
         if: always()
         run: rm -f app/release.keystore
 
+      - name: Determine Previous Tag
+        id: prev_tag
+        run: |
+          git fetch --tags
+          if [ "${{ inputs.prerelease }}" == "true" ]; then
+            PREV=$(git tag --sort=-v:refname | head -n 1 || true)
+          else
+            PREV=$(git tag --sort=-v:refname | grep -iE -v '-(alpha|beta|rc|snapshot|dev|preview|milestone|m[0-9]+)([.-][0-9]+)?$' | head -n 1 || true)
+          fi
+          echo "prev_tag=$PREV" >> "$GITHUB_OUTPUT"
+
+      # Create Git Tag
       - name: Create Git Tag
         run: |
           git config user.name "github-actions[bot]"
@@ -91,9 +103,11 @@ jobs:
           git tag "${{ inputs.tag }}"
           git push origin "${{ inputs.tag }}"
 
+      # Create GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
+          previous_tag: ${{ steps.prev_tag.outputs.prev_tag }}
           tag_name: ${{ inputs.tag }}
           name: ${{ inputs.tag }}
           files: |
