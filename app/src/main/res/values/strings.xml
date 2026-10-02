@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sākṣī Portal</string>
+    <string name="vault_download_url">https://github.com/RajnishKMehta/Sakshi-Vault/releases/latest/download/app-release.apk</string>
+    <string name="vault_download_error">No browser app found to download the Vault APK</string>
 </resources>

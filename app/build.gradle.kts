@@ -5,6 +5,7 @@
 plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 java {
@@ -92,6 +93,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.preferences.core)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+
+    implementation(libs.sakshi.sdk)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 

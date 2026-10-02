@@ -5,6 +5,7 @@
 package rajnishkmehta.sakshi.portal.ui.settings
 
 import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,11 +42,13 @@ import rajnishkmehta.sakshi.portal.data.SettingsRepository
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    onVaultSelectionClick: () -> Unit,
     repository: SettingsRepository,
     onBackClick: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val useDynamicColor by repository.useDynamicColorFlow.collectAsState(initial = true)
+    val vaultPackage by repository.vaultPackageFlow.collectAsState(initial = null)
     val context = LocalContext.current
 
     Scaffold(
@@ -120,6 +123,25 @@ fun SettingsScreen(
                         }
                     }
                 )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onVaultSelectionClick)
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Select Vault App", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        vaultPackage ?: "No vault selected",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (vaultPackage == null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     }
