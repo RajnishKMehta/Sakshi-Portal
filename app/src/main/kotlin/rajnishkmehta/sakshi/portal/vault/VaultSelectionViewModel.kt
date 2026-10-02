@@ -17,6 +17,7 @@ import rajnishkmehta.sakshi.sdk.api.SakshiClient
 import rajnishkmehta.sakshi.sdk.api.SakshiClientConfig
 import rajnishkmehta.sakshi.sdk.api.SakshiError
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
+import rajnishkmehta.sakshi.portal.R
 
 class VaultSelectionViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -44,7 +45,7 @@ class VaultSelectionViewModel(application: Application) : AndroidViewModel(appli
                 throw e
             } catch (e: Exception) {
                 // try { Log.e(tag = "VaultSelectionViewModel", message = "Error loading apps: ${e.message}") } catch (logE: Exception) {}
-                _uiState.value = UiState.Error(e.message ?: "Failed to load applications")
+                _uiState.value = UiState.Error(e.message ?: getApplication<Application>().getString(R.string.vault_selection_load_failed))
             }
         }
     }
@@ -92,7 +93,7 @@ class VaultSelectionViewModel(application: Application) : AndroidViewModel(appli
                 onResult(true, null)
             } else {
                 val err = result.errorOrNull()
-                val message = err?.message ?: "Unknown error"
+                val message = err?.message ?: getApplication<Application>().getString(R.string.unknown_error)
                 // try { Log.e(tag = "VaultSelectionViewModel", message = "Verification failed: $message") } catch (e: Exception) {}
                 onResult(false, message)
             }

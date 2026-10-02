@@ -3,4 +3,57 @@
     <string name="app_name">Sākṣī Portal</string>
     <string name="vault_download_url">https://github.com/RajnishKMehta/Sakshi-Vault/releases/latest/download/app-release.apk</string>
     <string name="vault_download_error">No browser app found to download the Vault APK</string>
+
+    <!-- Generic -->
+    <string name="back_content_description">Back</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_content_description">Settings</string>
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="unknown_error">Unknown error</string>
+
+    <!-- Gallery Screen -->
+    <string name="filter_all">All</string>
+    <string name="filter_photos">Photos</string>
+    <string name="filter_videos">Videos</string>
+    <string name="filter_audio">Audio</string>
+    <string name="filter_other">Other</string>
+    <string name="gallery_no_media">No media found.</string>
+    <string name="media_type_video">Video</string>
+    <string name="media_type_audio">Audio</string>
+    <string name="media_type_other">Other File</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_debug_logs_title">Debug Logs</string>
+    <string name="settings_debug_logs_desc">View and export application logs</string>
+    <string name="settings_debug_logs_button">Open</string>
+    <string name="settings_dynamic_color_title">Material You (Dynamic Colors)</string>
+    <string name="settings_dynamic_color_desc">Use system colors for app theme</string>
+    <string name="settings_select_vault_title">Select Vault App</string>
+    <string name="settings_no_vault_selected">No vault selected</string>
+
+    <!-- Vault Selection Screen -->
+    <string name="vault_selection_title">Select Vault App</string>
+    <string name="vault_selection_no_vault_app">No compatible Vault app found.</string>
+    <string name="vault_selection_download_button">Download Sākṣī Vault</string>
+    <string name="vault_selection_download_content_desc">Download Vault</string>
+    <string name="vault_selection_search_hint">Search apps…</string>
+    <string name="vault_selection_connection_failed">Failed to connect: %1$s</string>
+    <string name="vault_selection_no_apps_found">No apps found</string>
+    <string name="vault_selection_app_icon_content_desc">App Icon</string>
+    <string name="vault_selection_load_failed">Failed to load applications</string>
+
+    <!-- Debug Logs Activity -->
+    <string name="debug_logs_share_title">Share Log File</string>
+    <string name="debug_logs_empty_error">Log file is empty or does not exist</string>
+    <string name="debug_logs_cleared">Logs cleared</string>
+    <string name="debug_logs_rotated_deleted">Rotated logs deleted</string>
+    <string name="debug_logs_deleted_file">Deleted %1$s</string>
+    <string name="debug_logs_clear_active_btn">Clear Active Logs</string>
+    <string name="debug_logs_delete_rotated_btn">Delete Rotated</string>
+    <string name="debug_logs_active_section">Active Logs</string>
+    <string name="debug_logs_rotated_section">Rotated Logs</string>
+    <string name="debug_logs_size_bytes">%1$d Bytes</string>
+    <string name="debug_logs_size_kb">%1$d KB</string>
+    <string name="debug_logs_share_content_desc">Share</string>
+    <string name="debug_logs_delete_content_desc">Delete</string>
 </resources>

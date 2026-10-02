@@ -33,6 +33,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
@@ -54,12 +56,12 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back_content_description)
                         )
                     }
                 },
@@ -84,8 +86,8 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Debug Logs", style = MaterialTheme.typography.bodyLarge)
-                        Text("View and export application logs", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.settings_debug_logs_title), style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.settings_debug_logs_desc), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Button(
@@ -98,7 +100,7 @@ fun SettingsScreen(
                             }
                         }
                     ) {
-                        Text("Open")
+                        Text(stringResource(R.string.settings_debug_logs_button))
                     }
                 }
 
@@ -110,8 +112,8 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Material You (Dynamic Colors)", style = MaterialTheme.typography.bodyLarge)
-                    Text("Use system colors for app theme", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.settings_dynamic_color_title), style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.settings_dynamic_color_desc), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Switch(
@@ -135,14 +137,27 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Select Vault App", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.settings_select_vault_title), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        vaultPackage ?: "No vault selected",
+                        vaultPackage ?: stringResource(R.string.settings_no_vault_selected),
                         style = MaterialTheme.typography.bodyMedium,
                         color = if (vaultPackage == null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
         }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsScreenPreview() {
+    MaterialTheme {
+        SettingsScreen(
+            onVaultSelectionClick = {},
+            repository = SettingsRepository(LocalContext.current),
+            onBackClick = {}
+        )
     }
 }

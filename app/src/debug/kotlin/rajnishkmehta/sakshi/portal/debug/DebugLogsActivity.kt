@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import rajnishkmehta.sakshi.portal.R
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import rajnishkmehta.sakshi.portal.ui.theme.PortalTheme
@@ -60,9 +62,9 @@ class DebugLogsActivity : ComponentActivity() {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            startActivity(Intent.createChooser(intent, "Share Log File"))
+            startActivity(Intent.createChooser(intent, getString(R.string.debug_logs_share_title)))
         } else {
-            Toast.makeText(this, "Log file is empty or does not exist", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.debug_logs_empty_error), Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -79,10 +81,10 @@ fun DebugLogsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Debug Logs") },
+                title = { Text(stringResource(R.string.settings_debug_logs_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(painter = painterResource(id = android.R.drawable.ic_menu_revert), contentDescription = "Back")
+                        Icon(painter = painterResource(id = android.R.drawable.ic_menu_revert), contentDescription = stringResource(R.string.back_content_description))
                     }
                 }
             )
@@ -102,13 +104,13 @@ fun DebugLogsScreen(
                     onClick = {
                         val success = DebugLogger.clearLogs()
                         if (success) {
-                            Toast.makeText(context, "Logs cleared", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.resources.getString(R.string.debug_logs_cleared), Toast.LENGTH_SHORT).show()
                         }
                         files = DebugLogger.getLogFiles().sortedBy { it.name }
                     },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Clear Active Logs")
+                    Text(stringResource(R.string.debug_logs_clear_active_btn))
                 }
 
                 Button(
@@ -124,13 +126,13 @@ fun DebugLogsScreen(
                             }
                         }
                         if (anyDeleted) {
-                            Toast.makeText(context, "Rotated logs deleted", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.resources.getString(R.string.debug_logs_rotated_deleted), Toast.LENGTH_SHORT).show()
                             files = DebugLogger.getLogFiles().sortedBy { it.name }
                         }
                     },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Delete Rotated")
+                    Text(stringResource(R.string.debug_logs_delete_rotated_btn))
                 }
             }
 
@@ -147,7 +149,7 @@ fun DebugLogsScreen(
                 if (activeFiles.isNotEmpty()) {
                     item {
                         Text(
-                            text = "Active Logs",
+                            text = stringResource(R.string.debug_logs_active_section),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(vertical = 8.dp)
@@ -159,7 +161,7 @@ fun DebugLogsScreen(
                             onExport = { onExport(file) },
                             onDelete = {
                                 if (file.delete()) {
-                                    Toast.makeText(context, "Deleted ${file.name}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.resources.getString(R.string.debug_logs_deleted_file, file.name), Toast.LENGTH_SHORT).show()
                                     files = DebugLogger.getLogFiles().sortedBy { it.name }
                                 }
                             }
@@ -170,7 +172,7 @@ fun DebugLogsScreen(
                 if (rotatedFiles.isNotEmpty()) {
                     item {
                         Text(
-                            text = "Rotated Logs",
+                            text = stringResource(R.string.debug_logs_rotated_section),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(vertical = 8.dp)
@@ -182,7 +184,7 @@ fun DebugLogsScreen(
                             onExport = { onExport(file) },
                             onDelete = {
                                 if (file.delete()) {
-                                    Toast.makeText(context, "Deleted ${file.name}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.resources.getString(R.string.debug_logs_deleted_file, file.name), Toast.LENGTH_SHORT).show()
                                     files = DebugLogger.getLogFiles().sortedBy { it.name }
                                 }
                             }
@@ -207,15 +209,15 @@ fun LogFileRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(text = file.name, style = MaterialTheme.typography.bodyLarge)
             val length = file.length()
-            Text(text = if (length < 1024) "$length Bytes" else "${length / 1024} KB", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = if (length < 1024) stringResource(R.string.debug_logs_size_bytes, length) else stringResource(R.string.debug_logs_size_kb, length / 1024), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         IconButton(onClick = onExport) {
-            Icon(painter = painterResource(id = android.R.drawable.ic_menu_share), contentDescription = "Share")
+            Icon(painter = painterResource(id = android.R.drawable.ic_menu_share), contentDescription = stringResource(R.string.debug_logs_share_content_desc))
         }
 
         IconButton(onClick = onDelete) {
-            Icon(painter = painterResource(id = android.R.drawable.ic_menu_delete), contentDescription = "Delete")
+            Icon(painter = painterResource(id = android.R.drawable.ic_menu_delete), contentDescription = stringResource(R.string.debug_logs_delete_content_desc))
         }
     }
 }

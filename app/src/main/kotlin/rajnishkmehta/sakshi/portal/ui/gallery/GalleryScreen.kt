@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
 import kotlinx.coroutines.delay
@@ -105,7 +106,7 @@ fun GalleryScreen(modifier: Modifier = Modifier, onSettingsClick: () -> Unit = {
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_more_vert),
-                                contentDescription = "Settings",
+                                contentDescription = stringResource(R.string.settings_content_description),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
@@ -114,7 +115,7 @@ fun GalleryScreen(modifier: Modifier = Modifier, onSettingsClick: () -> Unit = {
                             onDismissRequest = { showMenu = false }
                         ) {
                             androidx.compose.material3.DropdownMenuItem(
-                                text = { Text("Settings") },
+                                text = { Text(stringResource(R.string.settings_title)) },
                                 onClick = {
                                     showMenu = false
                                     onSettingsClick()
@@ -143,27 +144,27 @@ fun GalleryScreen(modifier: Modifier = Modifier, onSettingsClick: () -> Unit = {
                 FilterChip(
                     selected = selectedType == MediaType.ALL,
                     onClick = { selectedType = MediaType.ALL },
-                    label = { Text("All") }
+                    label = { Text(stringResource(R.string.filter_all)) }
                 )
                 FilterChip(
                     selected = selectedType == MediaType.PHOTO,
                     onClick = { selectedType = MediaType.PHOTO },
-                    label = { Text("Photos") }
+                    label = { Text(stringResource(R.string.filter_photos)) }
                 )
                 FilterChip(
                     selected = selectedType == MediaType.VIDEO,
                     onClick = { selectedType = MediaType.VIDEO },
-                    label = { Text("Videos") }
+                    label = { Text(stringResource(R.string.filter_videos)) }
                 )
                 FilterChip(
                     selected = selectedType == MediaType.AUDIO,
                     onClick = { selectedType = MediaType.AUDIO },
-                    label = { Text("Audio") }
+                    label = { Text(stringResource(R.string.filter_audio)) }
                 )
                 FilterChip(
                     selected = selectedType == MediaType.OTHER,
                     onClick = { selectedType = MediaType.OTHER },
-                    label = { Text("Other") }
+                    label = { Text(stringResource(R.string.filter_other)) }
                 )
             }
 
@@ -175,7 +176,7 @@ fun GalleryScreen(modifier: Modifier = Modifier, onSettingsClick: () -> Unit = {
                 }
                 is GalleryUiState.Error -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.error_prefix, state.message), color = MaterialTheme.colorScheme.error)
                     }
                 }
                 is GalleryUiState.Success -> {
@@ -184,7 +185,7 @@ fun GalleryScreen(modifier: Modifier = Modifier, onSettingsClick: () -> Unit = {
                     // Media Grid
                     if (filteredData.isEmpty()) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("No media found.")
+                            Text(stringResource(R.string.gallery_no_media))
                         }
                     } else {
                         LazyVerticalStaggeredGrid(
@@ -217,7 +218,7 @@ fun MediaItem(item: DummyMediaItem) {
         if (item.type == MediaType.VIDEO) {
             Icon(
                 painter = painterResource(android.R.drawable.ic_media_play),
-                contentDescription = "Video",
+                contentDescription = stringResource(R.string.media_type_video),
                 tint = Color.White,
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -226,7 +227,7 @@ fun MediaItem(item: DummyMediaItem) {
         } else if (item.type == MediaType.AUDIO) {
             Icon(
                 painter = painterResource(R.drawable.ic_audio),
-                contentDescription = "Audio",
+                contentDescription = stringResource(R.string.media_type_audio),
                 tint = Color.White,
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -235,12 +236,21 @@ fun MediaItem(item: DummyMediaItem) {
         } else if (item.type == MediaType.OTHER) {
             Icon(
                 painter = painterResource(android.R.drawable.ic_media_play),
-                contentDescription = "Other File",
+                contentDescription = stringResource(R.string.media_type_other),
                 tint = Color.White,
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(32.dp)
             )
         }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun GalleryScreenPreview() {
+    MaterialTheme {
+        GalleryScreen()
     }
 }

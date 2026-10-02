@@ -4,6 +4,9 @@
  */
 package rajnishkmehta.sakshi.portal.ui.vault
 
+import androidx.compose.ui.res.stringResource
+import rajnishkmehta.sakshi.portal.R
+
 import android.widget.Toast
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -52,14 +55,12 @@ import android.graphics.drawable.Drawable
 import androidx.compose.ui.geometry.Size
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import rajnishkmehta.sakshi.portal.R
 import rajnishkmehta.sakshi.portal.vault.AppInfo
 import rajnishkmehta.sakshi.portal.vault.VaultSelectionViewModel
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
@@ -92,7 +93,7 @@ fun VaultSelectionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Select Vault App") },
+                title = { Text(stringResource(R.string.vault_selection_title)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         viewModel.cancelVerification()
@@ -102,7 +103,7 @@ fun VaultSelectionScreen(
                     }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back_content_description)
                         )
                     }
                 },
@@ -121,7 +122,7 @@ fun VaultSelectionScreen(
                     }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_download),
-                            contentDescription = "Download Vault"
+                            contentDescription = stringResource(R.string.vault_selection_download_content_desc)
                         )
                     }
                 },
@@ -147,7 +148,7 @@ fun VaultSelectionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholder = { Text("Search apps...") },
+                placeholder = { Text(stringResource(R.string.vault_selection_search_hint)) },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -179,7 +180,7 @@ fun VaultSelectionScreen(
                                             onAppSelected(app.packageName)
                                         } else {
                                             // try { Log.e(tag = "VaultSelection", message = "Ping failed for ${app.packageName}: $error") } catch (e: Exception) {}
-                                            Toast.makeText(context, "Failed to connect: $error", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(context, context.resources.getString(R.string.vault_selection_connection_failed, error ?: context.resources.getString(R.string.unknown_error)), Toast.LENGTH_LONG).show()
                                         }
                                     }
                                 }
@@ -202,7 +203,7 @@ fun VaultSelectionScreen(
                                             onAppSelected(app.packageName)
                                         } else {
                                             // try { Log.e(tag = "VaultSelection", message = "Ping failed for ${app.packageName}: $error") } catch (e: Exception) {}
-                                            Toast.makeText(context, "Failed to connect: $error", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(context, context.resources.getString(R.string.vault_selection_connection_failed, error ?: context.resources.getString(R.string.unknown_error)), Toast.LENGTH_LONG).show()
                                         }
                                     }
                                 }
@@ -212,7 +213,7 @@ fun VaultSelectionScreen(
                     is VaultSelectionViewModel.UiState.Error -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(
-                                text = "Error: ${state.message}",
+                                text = stringResource(R.string.error_prefix, state.message),
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodyLarge
                             )
@@ -240,7 +241,7 @@ fun AppList(apps: List<AppInfo>, onAppClick: (AppInfo) -> Unit) {
     // try { Log.i(tag = "VaultSelection", message = "AppList called with ${apps.size} apps") } catch (e: Exception) {}
     if (apps.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No apps found")
+            Text(stringResource(R.string.vault_selection_no_apps_found))
         }
     } else {
         // try { Log.i(tag = "VaultSelection", message = "Initializing LazyColumn") } catch (e: Exception) {}
@@ -327,7 +328,7 @@ fun AppItem(app: AppInfo, onClick: () -> Unit) {
         if (painter != null) {
             Image(
                 painter = painter,
-                contentDescription = "App Icon",
+                contentDescription = stringResource(R.string.vault_selection_app_icon_content_desc),
                 modifier = Modifier.size(48.dp)
             )
         } else {
