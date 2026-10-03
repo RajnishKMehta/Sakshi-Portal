@@ -38,7 +38,8 @@ data class RawMediaItem(
 data class ParsedMediaItem(
     val id: String,
     val type: MediaType,
-    val thumbnailUri: Uri
+    val thumbnailUri: Uri,
+    val timestamp: Long
 )
 
 class GalleryViewModel(
@@ -157,7 +158,8 @@ class GalleryViewModel(
                                 ParsedMediaItem(
                                     id = rawItem.fileId,
                                     type = type,
-                                    thumbnailUri = uri
+                                    thumbnailUri = uri,
+                                    timestamp = rawItem.timestamp
                                 )
                             )
                         }

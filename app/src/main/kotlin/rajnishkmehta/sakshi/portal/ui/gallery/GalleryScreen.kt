@@ -69,6 +69,11 @@ import rajnishkmehta.sakshi.portal.R
 import rajnishkmehta.sakshi.portal.data.SettingsRepository
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
 
+enum class SortOrder {
+    NEW_FIRST,
+    OLD_FIRST
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GalleryScreen(
@@ -83,6 +88,7 @@ fun GalleryScreen(
     )
 
     var selectedType by remember { mutableStateOf(MediaType.ALL) }
+    var sortOrder by remember { mutableStateOf(SortOrder.NEW_FIRST) }
     val uiState by viewModel.uiState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val pullToRefreshState = rememberPullToRefreshState()
@@ -133,35 +139,65 @@ fun GalleryScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                FilterChip(
-                    selected = selectedType == MediaType.ALL,
-                    onClick = { selectedType = MediaType.ALL },
-                    label = { Text(stringResource(R.string.filter_all)) }
-                )
-                FilterChip(
-                    selected = selectedType == MediaType.PHOTO,
-                    onClick = { selectedType = MediaType.PHOTO },
-                    label = { Text(stringResource(R.string.filter_photos)) }
-                )
-                FilterChip(
-                    selected = selectedType == MediaType.VIDEO,
-                    onClick = { selectedType = MediaType.VIDEO },
-                    label = { Text(stringResource(R.string.filter_videos)) }
-                )
-                FilterChip(
-                    selected = selectedType == MediaType.AUDIO,
-                    onClick = { selectedType = MediaType.AUDIO },
-                    label = { Text(stringResource(R.string.filter_audio)) }
-                )
-                FilterChip(
-                    selected = selectedType == MediaType.OTHER,
-                    onClick = { selectedType = MediaType.OTHER },
-                    label = { Text(stringResource(R.string.filter_other)) }
-                )
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FilterChip(
+                        selected = selectedType == MediaType.ALL,
+                        onClick = { selectedType = MediaType.ALL },
+                        label = { Text(stringResource(R.string.filter_all)) }
+                    )
+                    FilterChip(
+                        selected = selectedType == MediaType.PHOTO,
+                        onClick = { selectedType = MediaType.PHOTO },
+                        label = { Text(stringResource(R.string.filter_photos)) }
+                    )
+                    FilterChip(
+                        selected = selectedType == MediaType.VIDEO,
+                        onClick = { selectedType = MediaType.VIDEO },
+                        label = { Text(stringResource(R.string.filter_videos)) }
+                    )
+                    FilterChip(
+                        selected = selectedType == MediaType.AUDIO,
+                        onClick = { selectedType = MediaType.AUDIO },
+                        label = { Text(stringResource(R.string.filter_audio)) }
+                    )
+                    FilterChip(
+                        selected = selectedType == MediaType.OTHER,
+                        onClick = { selectedType = MediaType.OTHER },
+                        label = { Text(stringResource(R.string.filter_other)) }
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                androidx.compose.material3.TextButton(
+                    onClick = {
+                        sortOrder = if (sortOrder == SortOrder.NEW_FIRST) SortOrder.OLD_FIRST else SortOrder.NEW_FIRST
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            if (sortOrder == SortOrder.NEW_FIRST) R.drawable.ic_sort_asc else R.drawable.ic_sort_desc
+                        ),
+                        contentDescription = stringResource(
+                            if (sortOrder == SortOrder.NEW_FIRST) R.string.sort_new_first else R.string.sort_old_first
+                        ),
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        stringResource(if (sortOrder == SortOrder.NEW_FIRST) R.string.sort_new_first else R.string.sort_old_first),
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             }
 
             when (val state = uiState) {
@@ -229,7 +265,13 @@ fun GalleryScreen(
                     }
                 }
                 is GalleryUiState.Success -> {
-                    val filteredData = if (selectedType == MediaType.ALL) state.media else state.media.filter { it.type == selectedType }
+                    val filteredData = (if (selectedType == MediaType.ALL) state.media else state.media.filter { it.type == selectedType }).let { list ->
+                        if (sortOrder == SortOrder.NEW_FIRST) {
+                            list.sortedByDescending { it.timestamp }
+                        } else {
+                            list.sortedBy { it.timestamp }
+                        }
+                    }
 
                     PullToRefreshBox(
                         isRefreshing = isRefreshing,

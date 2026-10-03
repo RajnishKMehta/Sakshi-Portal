@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App Information -->
     <string name="app_name">Sākṣī Portal</string>
-    <string name="vault_download_url">https://github.com/RajnishKMehta/Sakshi-Vault/releases/latest/download/app-release.apk</string>
-    <string name="vault_download_error">No browser app found to download the Vault APK</string>
 
-    <!-- Generic -->
+    <!-- Generic & Reusable -->
     <string name="back_content_description">Back</string>
     <string name="settings_title">Settings</string>
     <string name="settings_content_description">Settings</string>
     <string name="error_prefix">Error: %1$s</string>
     <string name="unknown_error">Unknown error</string>
+    <string name="retry_action">Retry</string>
 
-    <!-- Gallery Screen -->
-    <string name="filter_all">All</string>
-    <string name="filter_photos">Photos</string>
-    <string name="filter_videos">Videos</string>
-    <string name="filter_audio">Audio</string>
-    <string name="filter_other">Other</string>
-    <string name="gallery_no_media">No media found.</string>
-    <string name="media_type_video">Video</string>
-    <string name="media_type_audio">Audio</string>
-    <string name="media_type_other">Other File</string>
+    <!-- External URLs & Links -->
+    <string name="vault_download_url">https://github.com/RajnishKMehta/Sakshi-Vault/releases/latest/download/app-release.apk</string>
+    <string name="vault_download_error">No browser app found to download the Vault APK</string>
 
     <!-- Settings Screen -->
     <string name="settings_debug_logs_title">Debug Logs</string>
@@ -31,7 +24,7 @@
     <string name="settings_select_vault_title">Select Vault App</string>
     <string name="settings_no_vault_selected">No vault selected</string>
 
-    <!-- Vault Selection Screen -->
+    <!-- Vault Selection / Connection -->
     <string name="vault_selection_title">Select Vault App</string>
     <string name="vault_selection_no_vault_app">No compatible Vault app found.</string>
     <string name="vault_selection_download_button">Download Sākṣī Vault</string>
@@ -41,6 +34,23 @@
     <string name="vault_selection_no_apps_found">No apps found</string>
     <string name="vault_selection_app_icon_content_desc">App Icon</string>
     <string name="vault_selection_load_failed">Failed to load applications</string>
+    <string name="vault_not_found_message">Vault application not found or unavailable.</string>
+    <string name="select_vault_action">Select Vault</string>
+    <string name="download_vault_action">Download Vault</string>
+
+    <!-- Gallery Screen -->
+    <string name="filter_all">All</string>
+    <string name="filter_photos">Photos</string>
+    <string name="filter_videos">Videos</string>
+    <string name="filter_audio">Audio</string>
+    <string name="filter_other">Other</string>
+    <string name="sort_new_first">Newest First</string>
+    <string name="sort_old_first">Oldest First</string>
+    <string name="gallery_no_media">No media found.</string>
+    <string name="gallery_nothing_in_vault">Nothing in Vault</string>
+    <string name="media_type_video">Video</string>
+    <string name="media_type_audio">Audio</string>
+    <string name="media_type_other">Other File</string>
 
     <!-- Debug Logs Activity -->
     <string name="debug_logs_share_title">Share Log File</string>
@@ -56,10 +66,4 @@
     <string name="debug_logs_size_kb">%1$d KB</string>
     <string name="debug_logs_share_content_desc">Share</string>
     <string name="debug_logs_delete_content_desc">Delete</string>
-
-    <string name="vault_not_found_message">Vault application not found or unavailable.</string>
-    <string name="select_vault_action">Select Vault</string>
-    <string name="retry_action">Retry</string>
-    <string name="gallery_nothing_in_vault">Nothing in Vault</string>
-    <string name="download_vault_action">Download Vault</string>
 </resources>
