@@ -2,6 +2,8 @@
  * Copyright 2026 Rajnish Kumar
  * SPDX-License-Identifier: Apache-2.0
  */
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package rajnishkmehta.sakshi.portal.ui.vault
 
 import androidx.compose.ui.res.stringResource
@@ -24,7 +26,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -161,7 +164,7 @@ fun VaultSelectionScreen(
                 // try { Log.d(tag = "VaultSelection", message = "Current UI State: ${uiState.javaClass.simpleName}") } catch (e: Exception) {}
                 when (val state = uiState) {
                     is VaultSelectionViewModel.UiState.Loading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        LoadingIndicator(modifier = Modifier.align(Alignment.Center))
                     }
                     is VaultSelectionViewModel.UiState.Success -> {
                         // try { Log.i(tag = "VaultSelection", message = "State is Success, rendering AppList") } catch (e: Exception) {}
@@ -228,7 +231,7 @@ fun VaultSelectionScreen(
                             .align(Alignment.Center)
                             .clickable(enabled = false) {}
                     ) {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        LoadingIndicator(modifier = Modifier.align(Alignment.Center))
                     }
                 }
             }
