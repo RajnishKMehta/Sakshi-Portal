@@ -45,17 +45,9 @@ jobs:
       - name: Read App Version
         id: version
         run: |
-          VCODE=$(grep '^[[:space:]]*versionCode[[:space:]]*=' app/build.gradle.kts \
-            | sed -E 's/.*=[[:space:]]*([0-9]+).*/\1/')
-
-          VSUFFIX=$(grep '^[[:space:]]*versionName[[:space:]]*=' app/build.gradle.kts \
-            | sed -E \
-              -e 's/.*versionCode\.toString\(\)[[:space:]]*\+[[:space:]]*"([^"]*)".*/\1/' \
-              -e 's/.*"\$\{versionCode\}([^"]*)".*/\1/' \
+          VERSION=$(grep '^[[:space:]]*versionName[[:space:]]*=' app/build.gradle.kts \
+            | sed -E 's/.*=[[:space:]]*"([^"]*)".*/\1/' \
             | head -n 1)
-
-          VSUFFIX="${VSUFFIX:-}"
-          VERSION="${VCODE}${VSUFFIX}"
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 

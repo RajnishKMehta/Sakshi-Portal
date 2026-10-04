@@ -25,8 +25,8 @@ android {
         applicationId = "rajnishkmehta.sakshi.portal"
         minSdk = 29
         targetSdk = 37
-        versionCode = 2
-        versionName = versionCode.toString() + "-alpha"
+        versionCode = 3
+        versionName = "1.0.0-beta.0"
     }
 
     buildFeatures {

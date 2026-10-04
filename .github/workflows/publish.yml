@@ -47,24 +47,17 @@ jobs:
 
       - name: Validate App Version
         run: |
-          VCODE=$(grep '^[[:space:]]*versionCode[[:space:]]*=' app/build.gradle.kts \
-            | sed -E 's/.*=[[:space:]]*([0-9]+).*/\1/')
-
-          VSUFFIX=$(grep '^[[:space:]]*versionName[[:space:]]*=' app/build.gradle.kts \
-            | sed -E \
-              -e 's/.*versionCode\.toString\(\)[[:space:]]*\+[[:space:]]*"([^"]*)".*/\1/' \
-              -e 's/.*"\$\{versionCode\}([^"]*)".*/\1/' \
+          VERSION=$(grep '^[[:space:]]*versionName[[:space:]]*=' app/build.gradle.kts \
+            | sed -E 's/.*=[[:space:]]*"([^"]*)".*/\1/' \
             | head -n 1)
-
-          VSUFFIX="${VSUFFIX:-}"
-          VERSION="${VCODE}${VSUFFIX}"
 
           echo "Build version : $VERSION"
           echo "Input version : ${{ inputs.version }}"
 
           if [ "$VERSION" != "${{ inputs.version }}" ]; then
             echo "Version mismatch."
-            exit 1
+            exit_code=1
+            sh -c "exit $exit_code"
           fi
 
       - name: Decode Keystore
@@ -77,7 +70,13 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        run: ./gradlew check assembleRelease
+        run: |
+          ./gradlew check assembleRelease
+          for apk in app/build/outputs/apk/release/*.apk; do
+            if [[ -f "$apk" ]]; then
+              mv "$apk" "app/build/outputs/apk/release/Sakshi-Portal.apk"
+            fi
+          done
 
       - name: Clean up Keystore
         if: always()
