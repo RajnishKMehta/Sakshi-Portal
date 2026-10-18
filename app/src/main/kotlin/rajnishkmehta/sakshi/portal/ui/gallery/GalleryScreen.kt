@@ -80,7 +80,8 @@ fun GalleryScreen(
     modifier: Modifier = Modifier,
     settingsRepository: SettingsRepository,
     onSettingsClick: () -> Unit = {},
-    onVaultSelectionClick: () -> Unit = {}
+    onVaultSelectionClick: () -> Unit = {},
+    onMediaClick: (String, MediaType) -> Unit = { _, _ -> }
 ) {
     val application = LocalContext.current.applicationContext as android.app.Application
     val viewModel: GalleryViewModel = viewModel(
@@ -303,7 +304,7 @@ fun GalleryScreen(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 items(filteredData, key = { it.id }) { item ->
-                                    MediaItem(item)
+                                    MediaItem(item, onMediaClick)
                                 }
                             }
                         }
@@ -315,15 +316,14 @@ fun GalleryScreen(
 }
 
 @Composable
-fun MediaItem(item: ParsedMediaItem) {
+fun MediaItem(item: ParsedMediaItem, onMediaClick: (String, MediaType) -> Unit = { _, _ -> }) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f) // Ensure strictly 1:1 squares
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable {
-                // TODO: Handle click to open media viewer
-                Log.d("MediaItem", "Clicked media item: ${item.id}")
+                onMediaClick(item.id, item.type)
             }
     ) {
         val placeholderRes = when (item.type) {

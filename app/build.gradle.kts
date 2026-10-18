@@ -97,13 +97,18 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
 
     implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
 
-
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui.compose.material3)
+    implementation(libs.media3.inspector)
+    implementation(libs.exifinterface)
 
     implementation(libs.sakshi.sdk)
+    implementation(libs.kotlinx.coroutines.guava)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 

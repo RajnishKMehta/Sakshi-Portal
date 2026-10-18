@@ -21,7 +21,11 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import kotlinx.serialization.Serializable
+import rajnishkmehta.sakshi.portal.ui.viewer.MediaViewerScreen
+import rajnishkmehta.sakshi.portal.ui.gallery.MediaType
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,12 +42,22 @@ class MainActivity : ComponentActivity() {
                 NavDisplay(
                     backStack = backStack,
                     onBack = { if (backStack.size > 1) backStack.removeLastOrNull() else finish() },
+                    entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
                     entryProvider = entryProvider {
                         entry<GalleryScreenRoute> {
                             GalleryScreen(
                                 settingsRepository = settingsRepository,
                                 onSettingsClick = { backStack.add(SettingsScreenRoute) },
-                                onVaultSelectionClick = { backStack.add(VaultSelectionScreenRoute) }
+                                onVaultSelectionClick = { backStack.add(VaultSelectionScreenRoute) },
+                                onMediaClick = { fileId, mediaType -> backStack.add(MediaViewerRoute(fileId, mediaType)) }
+                            )
+                        }
+                        entry<MediaViewerRoute> { route ->
+                            MediaViewerScreen(
+                                fileId = route.fileId,
+                                mediaType = route.mediaType,
+                                settingsRepository = settingsRepository,
+                                onBackClick = { backStack.removeLastOrNull() }
                             )
                         }
                         entry<SettingsScreenRoute> {
@@ -77,3 +91,13 @@ data object SettingsScreenRoute : NavKey
 
 @Serializable
 data object VaultSelectionScreenRoute : NavKey
+
+
+/**
+ * Navigation key for the Media Viewer screen.
+ *
+ * @property fileId The unique identifier of the media file to view.
+ * @property mediaType The type of media (e.g., photo, video) for rendering logic.
+ */
+@Serializable
+data class MediaViewerRoute(val fileId: String, val mediaType: MediaType) : NavKey

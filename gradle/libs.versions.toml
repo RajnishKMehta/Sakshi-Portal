@@ -1,5 +1,8 @@
 [versions]
-coil = "3.6.0"
+media3 = "1.11.1"
+exifinterface = "1.4.2"
+coroutines = "1.11.0"
+coil = "3.6.3"
 kotlinx-serialization = "1.12.0-RC"
 navigation3 = "1.2.0"
 compose-bom = "2026.09.00"
@@ -7,16 +10,21 @@ material3 = "1.5.0-alpha29"
 activity-compose = "1.14.0-alpha03"
 lifecycle = "2.11.0"
 agp = "9.4.1"
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 androidx-core = "1.19.1"
 appcompat = "1.8.0"
 material = "1.14.0"
 junit-jupiter = "6.1.3"
-junit-platform = "6.1.3"
 datastore = "1.3.0-alpha11"
-sakshiSdk = "1.0.0-RC.0"
+sakshi-sdk = "1.0.0-RC.1"
 
 [libraries]
+androidx-lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
+media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
+media3-ui-compose-material3 = { group = "androidx.media3", name = "media3-ui-compose-material3", version.ref = "media3" }
+media3-inspector = { group = "androidx.media3", name = "media3-inspector", version.ref = "media3" }
+exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
+kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "coroutines" }
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
@@ -36,10 +44,10 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-jupiter" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 androidx-datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "datastore" }
-sakshi-sdk = { module = "io.github.rajnishkmehta.sakshi:sakshi-sdk", version.ref = "sakshiSdk" }
+sakshi-sdk = { module = "io.github.rajnishkmehta.sakshi:sakshi-sdk", version.ref = "sakshi-sdk" }
 
 [plugins]
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
