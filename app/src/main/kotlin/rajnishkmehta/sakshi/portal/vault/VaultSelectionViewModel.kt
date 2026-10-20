@@ -18,6 +18,7 @@ import rajnishkmehta.sakshi.sdk.api.SakshiClientConfig
 import rajnishkmehta.sakshi.sdk.api.SakshiError
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
 import rajnishkmehta.sakshi.portal.R
+import kotlinx.coroutines.CancellationException
 
 class VaultSelectionViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -41,7 +42,7 @@ class VaultSelectionViewModel(application: Application) : AndroidViewModel(appli
                 allApps = repository.getInstalledApplications()
                 // try { Log.i(tag = "VaultSelectionViewModel", message = "Apps loaded: ${allApps.size}") } catch (e: Exception) {}
                 _uiState.value = UiState.Success(allApps)
-            } catch (e: kotlinx.coroutines.CancellationException) {
+            } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 // try { Log.e(tag = "VaultSelectionViewModel", message = "Error loading apps: ${e.message}") } catch (logE: Exception) {}

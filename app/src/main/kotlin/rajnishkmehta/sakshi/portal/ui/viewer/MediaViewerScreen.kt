@@ -37,6 +37,11 @@ import androidx.compose.material3.Button
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import android.app.Application
+import android.widget.Toast
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 
 @Composable
 fun MediaViewerScreen(
@@ -47,17 +52,32 @@ fun MediaViewerScreen(
 ) {
     val viewModel: MediaViewerViewModel = viewModel(
         factory = MediaViewerViewModelFactory(
-            application = androidx.compose.ui.platform.LocalContext.current.applicationContext as android.app.Application,
+            application = LocalContext.current.applicationContext as Application,
             settingsRepository = settingsRepository
         )
     )
 
     val uiState by viewModel.uiState.collectAsState()
+    val exportState by viewModel.exportState.collectAsState()
+    val context = LocalContext.current
+    val resources = LocalResources.current
 
     var showInfoSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(fileId) {
         viewModel.loadMedia(fileId)
+    }
+
+    LaunchedEffect(exportState) {
+        val message = when (val state = exportState) {
+            is MediaExportUiState.Completed -> resources.getString(R.string.viewer_save_success, state.location)
+            is MediaExportUiState.Failed -> resources.getString(R.string.viewer_save_failed, state.message)
+            else -> null
+        }
+        if (message != null) {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            viewModel.onExportResultShown()
+        }
     }
 
     Scaffold(
@@ -70,6 +90,20 @@ fun MediaViewerScreen(
                     }
                 },
                 actions = {
+                    val isExporting = exportState is MediaExportUiState.InProgress
+                    IconButton(
+                        onClick = { viewModel.exportMedia() },
+                        enabled = uiState is MediaViewerUiState.Success && !isExporting
+                    ) {
+                        if (isExporting) {
+                            LoadingIndicator(modifier = Modifier.size(24.dp))
+                        } else {
+                            Icon(
+                                painterResource(R.drawable.ic_download),
+                                contentDescription = stringResource(R.string.viewer_save_content_description)
+                            )
+                        }
+                    }
                     IconButton(onClick = { showInfoSheet = true }) {
                         Icon(painterResource(R.drawable.ic_info), contentDescription = "Info")
                     }

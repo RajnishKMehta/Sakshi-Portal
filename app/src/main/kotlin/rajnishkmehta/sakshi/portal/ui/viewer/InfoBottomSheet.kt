@@ -2,7 +2,7 @@
  * Copyright 2026 Rajnish Kumar
  * SPDX-License-Identifier: Apache-2.0
  */
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class, androidx.media3.common.util.UnstableApi::class, androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class, UnstableApi::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package rajnishkmehta.sakshi.portal.ui.viewer
 
@@ -44,7 +44,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.guava.await
 
-@androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.ui.Alignment
+import androidx.media3.common.Format
+import kotlinx.coroutines.CancellationException
+
+@ExperimentalMaterial3Api
 @Composable
 fun InfoBottomSheet(
     mediaDetails: MediaDetailsResponse,
@@ -101,10 +107,10 @@ fun InfoBottomSheet(
                                     val trackGroup = trackGroups.get(i)
                                     val format = trackGroup.getFormat(0)
 
-                                    if (format.width != androidx.media3.common.Format.NO_VALUE) {
+                                    if (format.width != Format.NO_VALUE) {
                                         videoInfo.add("Resolution" to "${format.width}x${format.height}")
                                     }
-                                    if (format.frameRate != androidx.media3.common.Format.NO_VALUE.toFloat()) {
+                                    if (format.frameRate != Format.NO_VALUE.toFloat()) {
                                         videoInfo.add("Frame Rate" to "${format.frameRate} fps")
                                     }
                                     if (format.sampleMimeType != null) {
@@ -113,16 +119,16 @@ fun InfoBottomSheet(
                                     if (format.codecs != null) {
                                         videoInfo.add("Codec" to format.codecs!!)
                                     }
-                                    if (format.bitrate != androidx.media3.common.Format.NO_VALUE) {
+                                    if (format.bitrate != Format.NO_VALUE) {
                                         videoInfo.add("Bitrate" to "${format.bitrate / 1000} kbps")
                                     }
-                                    if (format.rotationDegrees != androidx.media3.common.Format.NO_VALUE && format.rotationDegrees != 0) {
+                                    if (format.rotationDegrees != Format.NO_VALUE && format.rotationDegrees != 0) {
                                         videoInfo.add("Rotation" to "${format.rotationDegrees}°")
                                     }
                                 }
                             }
                         } catch (e: Exception) {
-                            if (e is kotlinx.coroutines.CancellationException) throw e
+                            if (e is CancellationException) throw e
                         }
 
                         technicalList = videoInfo.distinct()
@@ -141,7 +147,7 @@ fun InfoBottomSheet(
 
                                     val metadata = format.metadata
                                     if (metadata != null) {
-                                        val builder = androidx.media3.common.MediaMetadata.Builder()
+                                        val builder = MediaMetadata.Builder()
                                         for (j in 0 until metadata.length()) {
                                             metadata.get(j).populateMediaMetadata(builder)
                                         }
@@ -156,19 +162,19 @@ fun InfoBottomSheet(
                                     if (format.sampleMimeType != null) {
                                         audioInfo.add("MIME Type" to format.sampleMimeType!!)
                                     }
-                                    if (format.sampleRate != androidx.media3.common.Format.NO_VALUE) {
+                                    if (format.sampleRate != Format.NO_VALUE) {
                                         audioInfo.add("Sample Rate" to "${format.sampleRate} Hz")
                                     }
-                                    if (format.channelCount != androidx.media3.common.Format.NO_VALUE) {
+                                    if (format.channelCount != Format.NO_VALUE) {
                                         audioInfo.add("Channels" to "${format.channelCount}")
                                     }
-                                    if (format.bitrate != androidx.media3.common.Format.NO_VALUE) {
+                                    if (format.bitrate != Format.NO_VALUE) {
                                         audioInfo.add("Bitrate" to "${format.bitrate / 1000} kbps")
                                     }
                                 }
                             }
                         } catch (e: Exception) {
-                            if (e is kotlinx.coroutines.CancellationException) throw e
+                            if (e is CancellationException) throw e
                         }
 
                         metadataList = descriptiveInfo
@@ -179,7 +185,7 @@ fun InfoBottomSheet(
                     }
                 }
             } catch (e: Exception) {
-                if (e is kotlinx.coroutines.CancellationException) throw e
+                if (e is CancellationException) throw e
             } finally {
                 isLoading = false
             }
@@ -203,8 +209,8 @@ fun InfoBottomSheet(
             )
 
             if (isLoading) {
-                androidx.compose.material3.CircularProgressIndicator(
-                    modifier = Modifier.padding(16.dp).align(androidx.compose.ui.Alignment.CenterHorizontally)
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
                 )
             } else {
                 LazyColumn {
@@ -246,7 +252,7 @@ fun InfoBottomSheet(
     }
 }
 
-@androidx.compose.material3.ExperimentalMaterial3Api
+@ExperimentalMaterial3Api
 @Composable
 private fun InfoRow(key: String, value: String) {
     Column(modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth()) {

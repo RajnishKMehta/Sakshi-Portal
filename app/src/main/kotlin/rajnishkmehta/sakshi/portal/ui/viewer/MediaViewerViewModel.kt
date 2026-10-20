@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import rajnishkmehta.sakshi.portal.data.SettingsRepository
+import rajnishkmehta.sakshi.portal.data.export.MediaExportResult
+import rajnishkmehta.sakshi.portal.data.export.MediaExporter
 import rajnishkmehta.sakshi.sdk.api.SakshiClient
 import rajnishkmehta.sakshi.sdk.api.SakshiClientConfig
 import rajnishkmehta.sakshi.sdk.api.models.MediaDetailsResponse
@@ -26,13 +28,24 @@ sealed interface MediaViewerUiState {
     data class Error(val message: String) : MediaViewerUiState
 }
 
+/**
+ * ViewModel for the media viewer: loads media details from Vault and exports the current file.
+ *
+ * @param mediaExporter Exporter used by [exportMedia] to save the file into shared storage.
+ */
 class MediaViewerViewModel(
     application: Application,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val mediaExporter: MediaExporter = MediaExporter(application.contentResolver)
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow<MediaViewerUiState>(MediaViewerUiState.Loading)
     val uiState: StateFlow<MediaViewerUiState> = _uiState.asStateFlow()
+
+    private val _exportState = MutableStateFlow<MediaExportUiState>(MediaExportUiState.Idle)
+
+    /** State of the Save/Download action. */
+    val exportState: StateFlow<MediaExportUiState> = _exportState.asStateFlow()
 
     private var sakshiClient: SakshiClient? = null
 
@@ -62,6 +75,31 @@ class MediaViewerViewModel(
                 Log.e("MediaViewerViewModel", "Error loading media: ${e.message}")
                 _uiState.value = MediaViewerUiState.Error(e.message ?: "Unknown error")
             }
+        }
+    }
+
+    /**
+     * Saves the currently loaded media file into public shared storage.
+     *
+     * Does nothing if media details are not loaded yet or an export is already running.
+     */
+    fun exportMedia() {
+        val mediaDetails = (_uiState.value as? MediaViewerUiState.Success)?.mediaDetails ?: return
+        if (_exportState.value is MediaExportUiState.InProgress) return
+        _exportState.value = MediaExportUiState.InProgress
+
+        viewModelScope.launch {
+            _exportState.value = when (val result = mediaExporter.export(mediaDetails)) {
+                is MediaExportResult.Success -> MediaExportUiState.Completed(result.relativePath + result.displayName)
+                is MediaExportResult.Failure -> MediaExportUiState.Failed(result.message)
+            }
+        }
+    }
+
+    /** Resets a completed or failed export back to [MediaExportUiState.Idle] once its feedback was shown. */
+    fun onExportResultShown() {
+        if (_exportState.value is MediaExportUiState.Completed || _exportState.value is MediaExportUiState.Failed) {
+            _exportState.value = MediaExportUiState.Idle
         }
     }
 

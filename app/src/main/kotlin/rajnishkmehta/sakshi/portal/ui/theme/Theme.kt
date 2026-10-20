@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import android.view.WindowInsetsController
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -104,8 +105,8 @@ fun PortalTheme(
             val window = (view.context as Activity).window
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                 window.insetsController?.setSystemBarsAppearance(
-                    if (!useDarkTheme) android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
-                    android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                    if (!useDarkTheme) WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
                 )
             } else {
                 @Suppress("DEPRECATION")

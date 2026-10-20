@@ -32,13 +32,9 @@ import android.net.Uri
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-
-
-
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -68,6 +64,12 @@ import coil3.request.crossfade
 import rajnishkmehta.sakshi.portal.R
 import rajnishkmehta.sakshi.portal.data.SettingsRepository
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
+import android.app.Application
+import android.widget.Toast
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.TextButton
+import coil3.compose.SubcomposeAsyncImage
 
 enum class SortOrder {
     NEW_FIRST,
@@ -83,7 +85,7 @@ fun GalleryScreen(
     onVaultSelectionClick: () -> Unit = {},
     onMediaClick: (String, MediaType) -> Unit = { _, _ -> }
 ) {
-    val application = LocalContext.current.applicationContext as android.app.Application
+    val application = LocalContext.current.applicationContext as Application
     val viewModel: GalleryViewModel = viewModel(
         factory = GalleryViewModelFactory(application, settingsRepository)
     )
@@ -114,11 +116,11 @@ fun GalleryScreen(
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
-                        androidx.compose.material3.DropdownMenu(
+                        DropdownMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
-                            androidx.compose.material3.DropdownMenuItem(
+                            DropdownMenuItem(
                                 text = { Text(stringResource(R.string.settings_title)) },
                                 onClick = {
                                     showMenu = false
@@ -179,7 +181,7 @@ fun GalleryScreen(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                androidx.compose.material3.TextButton(
+                TextButton(
                     onClick = {
                         sortOrder = if (sortOrder == SortOrder.NEW_FIRST) SortOrder.OLD_FIRST else SortOrder.NEW_FIRST
                     }
@@ -238,7 +240,7 @@ fun GalleryScreen(
                                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                                     application.startActivity(intent)
                                 } catch (e: Exception) {
-                                    android.widget.Toast.makeText(application, application.resources.getString(R.string.vault_download_error), android.widget.Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(application, application.resources.getString(R.string.vault_download_error), Toast.LENGTH_SHORT).show()
                                 }
                             }) {
                                 Text(stringResource(R.string.download_vault_action))
@@ -334,7 +336,7 @@ fun MediaItem(item: ParsedMediaItem, onMediaClick: (String, MediaType) -> Unit =
         }
 
         // Thumbnail Image
-        coil3.compose.SubcomposeAsyncImage(
+        SubcomposeAsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(if (item.type == MediaType.AUDIO || item.type == MediaType.OTHER) null else item.thumbnailUri) // Force fallback/error for audio/other since they have no thumbnail
                 .crossfade(true)
