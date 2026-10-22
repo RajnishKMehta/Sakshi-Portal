@@ -56,6 +56,13 @@
     <string name="viewer_save_content_description">Save to device</string>
     <string name="viewer_save_success">Saved to %1$s</string>
     <string name="viewer_save_failed">Save failed: %1$s</string>
+    <string name="viewer_schedule_deletion_content_description">Schedule deletion</string>
+    <string name="viewer_schedule_deletion_title">Schedule deletion?</string>
+    <string name="viewer_schedule_deletion_message">This file will not be deleted immediately. It will be hidden from the gallery now and permanently deleted from Vault after 30 days. Copies you saved to your device and original camera files are not affected.</string>
+    <string name="viewer_schedule_deletion_confirm">Schedule deletion</string>
+    <string name="viewer_schedule_deletion_cancel">Cancel</string>
+    <string name="viewer_schedule_deletion_success">Scheduled for permanent deletion after 30 days</string>
+    <string name="viewer_schedule_deletion_failed">Could not schedule deletion: %1$s</string>
 
     <!-- Debug Logs Activity -->
     <string name="debug_logs_share_title">Share Log File</string>

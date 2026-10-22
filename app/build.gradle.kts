@@ -25,8 +25,8 @@ android {
         applicationId = "rajnishkmehta.sakshi.portal"
         minSdk = 29
         targetSdk = 37
-        versionCode = 4
-        versionName = "1.0.0-beta.1"
+        versionCode = 5
+        versionName = "1.0.0-beta.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

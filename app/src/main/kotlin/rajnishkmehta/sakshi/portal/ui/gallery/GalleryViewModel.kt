@@ -22,6 +22,11 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import rajnishkmehta.sakshi.portal.data.SettingsRepository
+import rajnishkmehta.sakshi.portal.data.deletion.RemovedMediaStore
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import rajnishkmehta.sakshi.sdk.api.SakshiClient
 import rajnishkmehta.sakshi.sdk.api.SakshiClientConfig
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
@@ -42,13 +47,21 @@ data class ParsedMediaItem(
     val timestamp: Long
 )
 
+/**
+ * ViewModel for the gallery: lists media from Vault and hides media that Vault confirmed as
+ * scheduled for deletion.
+ *
+ * @param removedMediaStore Source of media IDs to hide immediately.
+ */
 class GalleryViewModel(
     application: Application,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val removedMediaStore: RemovedMediaStore
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow<GalleryUiState>(GalleryUiState.Loading)
-    val uiState: StateFlow<GalleryUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<GalleryUiState> = combine(_uiState, removedMediaStore.removedIds, ::excludeRemovedMedia)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, GalleryUiState.Loading)
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
@@ -72,7 +85,16 @@ class GalleryViewModel(
         loadMedia(isRefresh = true)
     }
 
+    /**
+     * Loads the media list from Vault. Every load (app start, Vault switch, retry, pull-to-refresh)
+     * first clears [removedMediaStore]; the currently shown list keeps those items hidden until the
+     * fresh Vault result replaces it.
+     */
     fun loadMedia(specificPackage: String? = null, isRefresh: Boolean = false) {
+        val clearedIds = removedMediaStore.clear()
+        if (clearedIds.isNotEmpty()) {
+            _uiState.update { excludeRemovedMedia(it, clearedIds) }
+        }
         val previousJob = loadJob
         loadJob = viewModelScope.launch {
             previousJob?.cancelAndJoin()
@@ -188,14 +210,20 @@ class GalleryViewModel(
     }
 }
 
+/**
+ * Factory for [GalleryViewModel].
+ *
+ * @param removedMediaStore Callers must provide the store shared with the viewer to ensure immediate sync of deleted files.
+ */
 class GalleryViewModelFactory(
     private val application: Application,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val removedMediaStore: RemovedMediaStore
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(GalleryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return GalleryViewModel(application, settingsRepository) as T
+            return GalleryViewModel(application, settingsRepository, removedMediaStore) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import rajnishkmehta.sakshi.portal.R
 import rajnishkmehta.sakshi.portal.data.SettingsRepository
+import rajnishkmehta.sakshi.portal.data.deletion.RemovedMediaStore
 import rajnishkmehta.sakshi.portal.ui.gallery.MediaType
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -43,22 +44,34 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 
+/**
+ * Screen for viewing a specific media file from the Vault.
+ *
+ * @param fileId Unique identifier of the media to load.
+ * @param mediaType The type of the media file, used to select the appropriate viewer component.
+ * @param settingsRepository Repository for retrieving app settings like the selected Vault package.
+ * @param removedMediaStore Store that must be the gallery's shared store to communicate successful deletions.
+ * @param onBackClick Callback invoked to navigate back.
+ */
 @Composable
 fun MediaViewerScreen(
     fileId: String,
     mediaType: MediaType,
     settingsRepository: SettingsRepository,
+    removedMediaStore: RemovedMediaStore,
     onBackClick: () -> Unit
 ) {
     val viewModel: MediaViewerViewModel = viewModel(
         factory = MediaViewerViewModelFactory(
             application = LocalContext.current.applicationContext as Application,
-            settingsRepository = settingsRepository
+            settingsRepository = settingsRepository,
+            removedMediaStore = removedMediaStore
         )
     )
 
     val uiState by viewModel.uiState.collectAsState()
     val exportState by viewModel.exportState.collectAsState()
+    val deletionState by viewModel.deletionState.collectAsState()
     val context = LocalContext.current
     val resources = LocalResources.current
 
@@ -80,6 +93,31 @@ fun MediaViewerScreen(
         }
     }
 
+    LaunchedEffect(deletionState) {
+        when (val state = deletionState) {
+            is MediaDeletionUiState.Scheduled -> {
+                Toast.makeText(context, resources.getString(R.string.viewer_schedule_deletion_success), Toast.LENGTH_LONG).show()
+                onBackClick()
+            }
+            is MediaDeletionUiState.Failed -> {
+                Toast.makeText(
+                    context,
+                    resources.getString(R.string.viewer_schedule_deletion_failed, state.message),
+                    Toast.LENGTH_LONG
+                ).show()
+                viewModel.onDeletionFailureShown()
+            }
+            else -> Unit
+        }
+    }
+
+    if (deletionState is MediaDeletionUiState.Confirming) {
+        ScheduleDeletionDialog(
+            onConfirm = viewModel::confirmDeletion,
+            onDismiss = viewModel::cancelDeletion
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -91,6 +129,22 @@ fun MediaViewerScreen(
                 },
                 actions = {
                     val isExporting = exportState is MediaExportUiState.InProgress
+                    val isSchedulingDeletion = deletionState is MediaDeletionUiState.InProgress ||
+                        deletionState is MediaDeletionUiState.Scheduled
+                    IconButton(
+                        onClick = { viewModel.requestDeletion() },
+                        enabled = uiState is MediaViewerUiState.Success && deletionState is MediaDeletionUiState.Idle
+                    ) {
+                        if (isSchedulingDeletion) {
+                            LoadingIndicator(modifier = Modifier.size(24.dp))
+                        } else {
+                            Icon(
+                                painterResource(R.drawable.trash_clock),
+                                contentDescription = stringResource(R.string.viewer_schedule_deletion_content_description),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
                     IconButton(
                         onClick = { viewModel.exportMedia() },
                         enabled = uiState is MediaViewerUiState.Success && !isExporting

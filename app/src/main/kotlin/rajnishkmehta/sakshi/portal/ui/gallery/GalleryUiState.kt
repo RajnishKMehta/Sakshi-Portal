@@ -10,3 +10,13 @@ sealed interface GalleryUiState {
     data class Error(val message: String) : GalleryUiState
     data object VaultUnavailable : GalleryUiState
 }
+
+/**
+ * Returns [state] without the media whose IDs are in [removedIds]. Non-success states are returned unchanged.
+ */
+fun excludeRemovedMedia(state: GalleryUiState, removedIds: Set<String>): GalleryUiState =
+    if (state is GalleryUiState.Success && removedIds.isNotEmpty()) {
+        state.copy(media = state.media.filterNot { it.id in removedIds })
+    } else {
+        state
+    }
