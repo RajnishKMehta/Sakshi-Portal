@@ -34,6 +34,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -98,20 +99,21 @@ fun VaultSelectionScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.vault_selection_title)) },
                 navigationIcon = {
-                    IconButton(onClick = {
+                    TextButton(onClick = {
                         viewModel.cancelVerification()
                         searchQuery = ""
                         viewModel.filter("")
                         onBackClick()
                     }) {
                         Icon(
+                            modifier = Modifier.padding(end = 8.dp),
                             painter = painterResource(R.drawable.ic_arrow_back),
                             contentDescription = stringResource(R.string.back_content_description)
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
+                    TextButton(onClick = {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(context.resources.getString(R.string.vault_download_url)))
                         try {
                             if (intent.resolveActivity(context.packageManager) != null) {
@@ -125,7 +127,11 @@ fun VaultSelectionScreen(
                     }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_download),
-                            contentDescription = stringResource(R.string.vault_selection_download_content_desc)
+                            contentDescription = stringResource(R.string.vault_selection_download_content_desc),
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.vault_selection_download_button)
                         )
                     }
                 },
@@ -268,7 +274,8 @@ fun AppItem(app: AppInfo, onClick: () -> Unit) {
         withContext(Dispatchers.IO) {
             try {
                 val pm = context.packageManager
-                val icon = pm.getApplicationIcon(app.packageName)
+                val icon = pm.getApplicationIcon(
+                            app.packageName)
                 // try { Log.d(tag = "VaultSelection", message = "Icon loaded for ${app.packageName}: type ${icon.javaClass.simpleName}") } catch (e: Exception) {}
                 withContext(Dispatchers.Main) {
                     iconDrawable = icon
