@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.map
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
+/**
+ * Repository for accessing and modifying user preferences via DataStore.
+ */
 class SettingsRepository(private val context: Context) {
 
     companion object {
@@ -29,6 +32,7 @@ class SettingsRepository(private val context: Context) {
             preferences[DYNAMIC_COLOR_KEY] ?: true
         }
 
+    /** Emits the currently selected Vault package name, or null if not set. */
     val vaultPackageFlow: Flow<String?> = context.dataStore.data
         .map { preferences ->
             preferences[VAULT_PACKAGE_KEY]

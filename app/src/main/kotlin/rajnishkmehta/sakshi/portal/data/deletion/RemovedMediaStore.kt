@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 
 /**
- * In-memory store of media IDs that Vault confirmed as scheduled for deletion during this session.
+ * In-memory store of media IDs that Vault confirmed as scheduled for deletion or recovered during this session.
  *
- * The gallery hides these IDs immediately, without waiting for the next `listMedia` refresh
- * (which also excludes them because Vault no longer lists scheduled files).
+ * The gallery hides these IDs immediately to update the UI optimistically without waiting for the next `listMedia` refresh
+ * (which naturally excludes them based on the current mode).
  */
 class RemovedMediaStore {
 

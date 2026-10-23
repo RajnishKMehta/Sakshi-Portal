@@ -34,12 +34,26 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.cancelAndJoin
 
+/**
+ * Represents a raw media item as returned by the Vault SDK.
+ *
+ * @property fileId The unique identifier of the media file.
+ * @property timestamp The timestamp representing when the media was captured or created, in milliseconds.
+ */
 @Serializable
 data class RawMediaItem(
     val fileId: String,
     val timestamp: Long
 )
 
+/**
+ * Represents a parsed media item ready for UI rendering.
+ *
+ * @property id The unique identifier of the media file.
+ * @property type The type of the media (e.g., PHOTO, VIDEO).
+ * @property thumbnailUri The URI used to load the thumbnail for this media item.
+ * @property timestamp The creation timestamp, used for sorting.
+ */
 data class ParsedMediaItem(
     val id: String,
     val type: MediaType,
@@ -48,11 +62,17 @@ data class ParsedMediaItem(
 )
 
 /**
- * ViewModel for the gallery: lists media from Vault and hides media that Vault confirmed as
- * scheduled for deletion.
+ * ViewModel for the gallery screen. It is responsible for loading the list of media from the Vault,
+ * handling pull-to-refresh, and managing UI state including loading, success, and error states.
  *
- * @param removedMediaStore Source of media IDs to hide immediately.
- * @param isDeletedMode True if this viewModel is for the Scheduled Deletions screen.
+ * The ViewModel handles both standard gallery mode and deleted-media mode (scheduled deletions).
+ * To ensure UI consistency, it hides media files that were just scheduled for deletion or recovered,
+ * relying on the [removedMediaStore] to filter out IDs until a fresh Vault list is fetched.
+ *
+ * @param application The application context.
+ * @param settingsRepository Repository for retrieving the configured Vault package name.
+ * @param removedMediaStore Source of media IDs to hide immediately (optimistic UI updates).
+ * @param isDeletedMode True if this ViewModel is specifically configured for the Scheduled Deletions screen.
  */
 class GalleryViewModel(
     application: Application,
@@ -62,14 +82,20 @@ class GalleryViewModel(
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow<GalleryUiState>(GalleryUiState.Loading)
+
+    /**
+     * The current state of the gallery UI. The list of media excludes any item whose ID is
+     * present in the [removedMediaStore].
+     */
     val uiState: StateFlow<GalleryUiState> = combine(_uiState, removedMediaStore.removedIds, ::excludeRemovedMedia)
         .stateIn(viewModelScope, SharingStarted.Eagerly, GalleryUiState.Loading)
 
     private val _isRefreshing = MutableStateFlow(false)
+
+    /** Indicates whether a pull-to-refresh operation is currently in progress. */
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     private var sakshiClient: SakshiClient? = null
-
     private var loadJob: Job? = null
 
     init {
@@ -82,15 +108,22 @@ class GalleryViewModel(
         }
     }
 
+    /**
+     * Triggers a refresh of the media list, showing the pull-to-refresh indicator.
+     */
     fun refreshMedia() {
         _isRefreshing.value = true
         loadMedia(isRefresh = true)
     }
 
     /**
-     * Loads the media list from Vault. Every load (app start, Vault switch, retry, pull-to-refresh)
-     * first clears [removedMediaStore]; the currently shown list keeps those items hidden until the
-     * fresh Vault result replaces it.
+     * Loads the media list from Vault using the Sakshi SDK.
+     *
+     * Every load (app start, Vault switch, retry, pull-to-refresh) first clears [removedMediaStore];
+     * the currently shown list keeps those items hidden until the fresh Vault result replaces it.
+     *
+     * @param specificPackage An optional package name to use instead of the one in settings.
+     * @param isRefresh If true, suppresses the initial loading state for seamless pull-to-refresh.
      */
     fun loadMedia(specificPackage: String? = null, isRefresh: Boolean = false) {
         val clearedIds = removedMediaStore.clear()
@@ -153,9 +186,9 @@ class GalleryViewModel(
                 val rawMediaMap = try {
                     Json.decodeFromString<Map<String, List<RawMediaItem>>>(jsonString)
                 } catch (e: CancellationException) {
-                Log.d("GalleryViewModel", "loadMedia cancelled")
-                throw e
-            } catch (e: Exception) {
+                    Log.d("GalleryViewModel", "loadMedia cancelled")
+                    throw e
+                } catch (e: Exception) {
                     Log.e("GalleryViewModel", "Failed to parse JSON: ${e.message}")
                     _uiState.value = GalleryUiState.Error("Invalid response format from Vault.")
                     return@launch
@@ -213,8 +246,10 @@ class GalleryViewModel(
 }
 
 /**
- * Factory for [GalleryViewModel].
+ * Factory for creating [GalleryViewModel].
  *
+ * @param application The application context.
+ * @param settingsRepository Repository for settings.
  * @param removedMediaStore Callers must provide the store shared with the viewer to ensure immediate sync of deleted files.
  * @param isDeletedMode When true, configures the ViewModel to load data exclusively from the deleted media data source.
  */

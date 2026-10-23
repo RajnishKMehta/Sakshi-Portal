@@ -12,6 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
 
+/**
+ * Discovers installed applications to find compatible Vaults.
+ */
 class AppDiscoveryRepository(private val context: Context) {
 
     suspend fun getInstalledApplications(): List<AppInfo> = withContext(Dispatchers.IO) {

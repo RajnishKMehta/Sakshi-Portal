@@ -79,12 +79,12 @@ enum class SortOrder {
 }
 
 /**
- * The main gallery screen that displays media from the Vault.
+ * The main gallery screen that displays media from the Vault. Supports standard and deleted-media modes, pull-to-refresh, filtering, and sorting.
  *
  * @param removedMediaStore Store containing media items scheduled for deletion. Must be the store shared with the viewer so its lifetime covers both screens.
  * @param isDeletedMode When true, the gallery displays only media scheduled for deletion.
  * @param onScheduledDeletionsClick Callback invoked when the user navigates to the scheduled deletions screen.
- * @param onMediaClick Callback invoked when a media item is clicked. Receives the file ID, media type, and the scheduled deletion timestamp (if applicable).
+ * @param onMediaClick Callback invoked when a media item is clicked. Receives the file ID, media type, and the capture/creation timestamp.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

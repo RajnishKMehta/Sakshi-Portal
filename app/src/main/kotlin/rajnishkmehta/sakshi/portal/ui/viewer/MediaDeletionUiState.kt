@@ -4,7 +4,10 @@
  */
 package rajnishkmehta.sakshi.portal.ui.viewer
 
-/** UI state of the "schedule deletion" action in the media viewer. */
+/**
+ * UI state of deletion scheduling or recovery actions in the media viewer.
+ * This same sealed interface is used for both deleting normal media and recovering deleted media.
+ */
 sealed interface MediaDeletionUiState {
     /** No deletion request is pending. */
     data object Idle : MediaDeletionUiState

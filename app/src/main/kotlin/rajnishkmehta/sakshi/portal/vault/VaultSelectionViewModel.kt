@@ -20,6 +20,9 @@ import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
 import rajnishkmehta.sakshi.portal.R
 import kotlinx.coroutines.CancellationException
 
+/**
+ * ViewModel managing the discovery and selection of a Vault application.
+ */
 class VaultSelectionViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = AppDiscoveryRepository(application)

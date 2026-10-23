@@ -27,9 +27,15 @@ import rajnishkmehta.sakshi.sdk.api.models.MediaDetailsResponse
 import kotlinx.coroutines.flow.firstOrNull
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
 
+/**
+ * UI state for the media viewer screen.
+ */
 sealed interface MediaViewerUiState {
+        /** Indicates media details are currently being loaded from Vault. */
     data object Loading : MediaViewerUiState
+        /** Indicates media details were successfully loaded. */
     data class Success(val mediaDetails: MediaDetailsResponse) : MediaViewerUiState
+        /** Indicates an error occurred while loading media details. */
     data class Error(val message: String) : MediaViewerUiState
 }
 
@@ -79,6 +85,11 @@ class MediaViewerViewModel(
         removedMediaStore = removedMediaStore
     )
 
+        /**
+     * Loads the complete media details from Vault using the Sakshi SDK.
+     *
+     * @param fileId The unique identifier of the media to load.
+     */
     fun loadMedia(fileId: String) {
         viewModelScope.launch {
             _uiState.value = MediaViewerUiState.Loading
@@ -169,6 +180,11 @@ class MediaViewerViewModel(
     }
 
     /** Resets a failed deletion back to [MediaDeletionUiState.Idle] once its feedback was shown. */
+    fun onDeletionFailureShown() {
+        if (_deletionState.value is MediaDeletionUiState.Failed) {
+            _deletionState.value = MediaDeletionUiState.Idle
+        }
+    }
 
     /** Shows the recovery confirmation dialog for the loaded media file. */
     fun requestRecovery() {
@@ -208,18 +224,19 @@ class MediaViewerViewModel(
             _recoverState.value = MediaDeletionUiState.Idle
         }
     }
-    fun onDeletionFailureShown() {
-        if (_deletionState.value is MediaDeletionUiState.Failed) {
-            _deletionState.value = MediaDeletionUiState.Idle
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
         sakshiClient?.disconnect()
     }
 }
 
+/**
+ * Factory for creating [MediaViewerViewModel].
+ *
+ * @param application The application context.
+ * @param settingsRepository Repository for retrieving the Vault package name.
+ * @param removedMediaStore Store notified when Vault confirms a scheduled deletion or recovery.
+ */
 class MediaViewerViewModelFactory(
     private val application: Application,
     private val settingsRepository: SettingsRepository,

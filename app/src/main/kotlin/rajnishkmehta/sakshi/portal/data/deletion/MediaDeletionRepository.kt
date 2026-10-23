@@ -70,6 +70,10 @@ class MediaDeletionRepository(
     }
 
     /** Recovers [fileId] from scheduled deletion. */
+        /**
+     * Recovers [fileId] from scheduled deletion. Does not report success until Vault confirms it.
+     * Marks the item as removed from the scheduled deletions UI.
+     */
     suspend fun recoverMediaAction(fileId: String): RecoverMediaResult {
         val result = try {
             recoverMedia(fileId)

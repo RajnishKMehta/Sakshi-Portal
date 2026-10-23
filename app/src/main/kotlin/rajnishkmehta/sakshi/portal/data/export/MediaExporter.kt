@@ -40,6 +40,13 @@ class MediaExporter(
      *
      * @throws CancellationException if the calling coroutine is cancelled; the partial file is removed first.
      */
+        /**
+     * Copies the file described by [mediaDetails] into the matching shared-storage collection.
+     * Uses the IS_PENDING flag during I/O to prevent partial reads by other apps.
+     *
+     * @param mediaDetails Information about the media file to export.
+     * @return [MediaExportResult] indicating success or failure.
+     */
     suspend fun export(mediaDetails: MediaDetailsResponse): MediaExportResult = withContext(ioDispatcher) {
         val extension = normalizeExtension(mediaDetails.fileExtension)
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
