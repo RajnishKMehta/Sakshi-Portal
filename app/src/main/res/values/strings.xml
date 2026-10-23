@@ -15,7 +15,7 @@
     <string name="scheduled_deletions_menu_item">Recover Media</string>
 
     <!-- External URLs & Links -->
-    <string name="vault_download_url">https://github.com/RajnishKMehta/Sakshi-Vault/releases/latest/download/app-release.apk</string>
+    <string name="vault_download_url">https://github.com/RajnishKMehta/Sakshi-Vault/releases/latest/download/Sakshi-Vault.apk</string>
     <string name="vault_download_error">No browser app found to download the Vault APK</string>
 
     <!-- Settings Screen -->
