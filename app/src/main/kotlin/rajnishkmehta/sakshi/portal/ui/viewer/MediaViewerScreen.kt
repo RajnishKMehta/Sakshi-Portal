@@ -49,6 +49,8 @@ import androidx.compose.ui.platform.LocalResources
  *
  * @param fileId Unique identifier of the media to load.
  * @param mediaType The type of the media file, used to select the appropriate viewer component.
+ * @param isDeletedMode True if viewing an item scheduled for deletion; limits available actions (e.g., hiding delete button, showing recover option).
+ * @param scheduledTime Timestamp when deletion was scheduled, only applicable when isDeletedMode is true.
  * @param settingsRepository Repository for retrieving app settings like the selected Vault package.
  * @param removedMediaStore Store that must be the gallery's shared store to communicate successful deletions.
  * @param onBackClick Callback invoked to navigate back.
@@ -57,6 +59,8 @@ import androidx.compose.ui.platform.LocalResources
 fun MediaViewerScreen(
     fileId: String,
     mediaType: MediaType,
+    isDeletedMode: Boolean = false,
+    scheduledTime: Long = -1L,
     settingsRepository: SettingsRepository,
     removedMediaStore: RemovedMediaStore,
     onBackClick: () -> Unit
@@ -72,6 +76,7 @@ fun MediaViewerScreen(
     val uiState by viewModel.uiState.collectAsState()
     val exportState by viewModel.exportState.collectAsState()
     val deletionState by viewModel.deletionState.collectAsState()
+    val recoverState by viewModel.recoverState.collectAsState()
     val context = LocalContext.current
     val resources = LocalResources.current
 
@@ -111,6 +116,31 @@ fun MediaViewerScreen(
         }
     }
 
+
+    LaunchedEffect(recoverState) {
+        when (val state = recoverState) {
+            is MediaDeletionUiState.Scheduled -> {
+                Toast.makeText(context, resources.getString(R.string.viewer_recover_success), Toast.LENGTH_LONG).show()
+                onBackClick()
+            }
+            is MediaDeletionUiState.Failed -> {
+                Toast.makeText(
+                    context,
+                    resources.getString(R.string.viewer_recover_failed, state.message),
+                    Toast.LENGTH_LONG
+                ).show()
+                viewModel.onRecoveryFailureShown()
+            }
+            else -> Unit
+        }
+    }
+
+    if (recoverState is MediaDeletionUiState.Confirming) {
+        RecoverMediaDialog(
+            onConfirm = viewModel::confirmRecovery,
+            onDismiss = viewModel::cancelRecovery
+        )
+    }
     if (deletionState is MediaDeletionUiState.Confirming) {
         ScheduleDeletionDialog(
             onConfirm = viewModel::confirmDeletion,
@@ -129,20 +159,38 @@ fun MediaViewerScreen(
                 },
                 actions = {
                     val isExporting = exportState is MediaExportUiState.InProgress
-                    val isSchedulingDeletion = deletionState is MediaDeletionUiState.InProgress ||
-                        deletionState is MediaDeletionUiState.Scheduled
-                    IconButton(
-                        onClick = { viewModel.requestDeletion() },
-                        enabled = uiState is MediaViewerUiState.Success && deletionState is MediaDeletionUiState.Idle
-                    ) {
-                        if (isSchedulingDeletion) {
-                            LoadingIndicator(modifier = Modifier.size(24.dp))
-                        } else {
-                            Icon(
-                                painterResource(R.drawable.trash_clock),
-                                contentDescription = stringResource(R.string.viewer_schedule_deletion_content_description),
-                                modifier = Modifier.size(24.dp)
-                            )
+                    if (isDeletedMode) {
+                        val isRecovering = recoverState is MediaDeletionUiState.InProgress || recoverState is MediaDeletionUiState.Scheduled
+                        IconButton(
+                            onClick = { viewModel.requestRecovery() },
+                            enabled = uiState is MediaViewerUiState.Success && recoverState is MediaDeletionUiState.Idle
+                        ) {
+                            if (isRecovering) {
+                                LoadingIndicator(modifier = Modifier.size(24.dp))
+                            } else {
+                                Icon(
+                                    painterResource(R.drawable.ic_restore),
+                                    contentDescription = stringResource(R.string.viewer_recover_content_description),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                    } else {
+                        val isSchedulingDeletion = deletionState is MediaDeletionUiState.InProgress ||
+                            deletionState is MediaDeletionUiState.Scheduled
+                        IconButton(
+                            onClick = { viewModel.requestDeletion() },
+                            enabled = uiState is MediaViewerUiState.Success && deletionState is MediaDeletionUiState.Idle
+                        ) {
+                            if (isSchedulingDeletion) {
+                                LoadingIndicator(modifier = Modifier.size(24.dp))
+                            } else {
+                                Icon(
+                                    painterResource(R.drawable.ic_trash_clock),
+                                    contentDescription = stringResource(R.string.viewer_schedule_deletion_content_description),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
                     }
                     IconButton(
@@ -207,6 +255,8 @@ fun MediaViewerScreen(
                     if (showInfoSheet) {
                         InfoBottomSheet(
                             mediaDetails = mediaDetails,
+                            isDeletedMode = isDeletedMode,
+                            scheduledTime = scheduledTime,
                             onDismissRequest = { showInfoSheet = false }
                         )
                     }

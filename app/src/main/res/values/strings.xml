@@ -10,6 +10,9 @@
     <string name="error_prefix">Error: %1$s</string>
     <string name="unknown_error">Unknown error</string>
     <string name="retry_action">Retry</string>
+    <string name="scheduled_deletions_title">Scheduled Deletions</string>
+    <string name="scheduled_deletions_empty">No scheduled deletions.</string>
+    <string name="scheduled_deletions_menu_item">Recover Media</string>
 
     <!-- External URLs & Links -->
     <string name="vault_download_url">https://github.com/RajnishKMehta/Sakshi-Vault/releases/latest/download/app-release.apk</string>
@@ -63,6 +66,12 @@
     <string name="viewer_schedule_deletion_cancel">Cancel</string>
     <string name="viewer_schedule_deletion_success">Scheduled for permanent deletion after 30 days</string>
     <string name="viewer_schedule_deletion_failed">Could not schedule deletion: %1$s</string>
+
+    <string name="viewer_recover_content_description">Recover media</string>
+    <string name="viewer_recover_title">Recover this file?</string>
+    <string name="viewer_recover_message">This will remove the file from scheduled deletions and restore it to the normal gallery.</string>
+    <string name="viewer_recover_success">File recovered successfully</string>
+    <string name="viewer_recover_failed">Could not recover file: %1$s</string>
 
     <!-- Debug Logs Activity -->
     <string name="debug_logs_share_title">Share Log File</string>

@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.guava.await
 
@@ -50,10 +51,20 @@ import androidx.compose.ui.Alignment
 import androidx.media3.common.Format
 import kotlinx.coroutines.CancellationException
 
+/**
+ * Bottom sheet displaying detailed metadata for a media item.
+ *
+ * @param mediaDetails The core media properties (name, size, type, location).
+ * @param isDeletedMode True if displaying info for a media item scheduled for deletion; affects metadata visibility.
+ * @param scheduledTime The timestamp when deletion was scheduled (used only when isDeletedMode is true).
+ * @param onDismissRequest Callback to dismiss the bottom sheet.
+ */
 @ExperimentalMaterial3Api
 @Composable
 fun InfoBottomSheet(
     mediaDetails: MediaDetailsResponse,
+    isDeletedMode: Boolean = false,
+    scheduledTime: Long = -1L,
     onDismissRequest: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
@@ -69,9 +80,13 @@ fun InfoBottomSheet(
             val baseInfo = mutableListOf(
                 "File ID" to mediaDetails.fileId,
                 "Type" to mediaDetails.mediaType,
-                "Extension" to mediaDetails.fileExtension.uppercase(),
-                "Created Time" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(mediaDetails.createdTime))
+                "Extension" to mediaDetails.fileExtension.uppercase()
             )
+            if (isDeletedMode) {
+                baseInfo.add("Deletion Scheduled" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(scheduledTime)))
+            } else {
+                baseInfo.add("Created Time" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(mediaDetails.createdTime)))
+            }
 
             metadataList = baseInfo
             technicalList = emptyList()
@@ -226,6 +241,11 @@ fun InfoBottomSheet(
                     items(metadataList) { (key, value) ->
                         InfoRow(key = key, value = value)
                     }
+                    if (isDeletedMode) {
+                        item {
+                            RemainingTimeCountdown(scheduledTime = scheduledTime)
+                        }
+                    }
 
                     if (technicalList.isNotEmpty()) {
                         item {
@@ -258,5 +278,50 @@ private fun InfoRow(key: String, value: String) {
     Column(modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth()) {
         Text(text = key, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(text = value, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+
+@Composable
+private fun RemainingTimeCountdown(scheduledTime: Long) {
+    var remainingText by remember { mutableStateOf("") }
+    var isOverdue by remember { mutableStateOf(false) }
+
+    LaunchedEffect(scheduledTime) {
+        val thirtyDaysInMillis = 30L * 24 * 60 * 60 * 1000
+        val permanentDeletionTime = scheduledTime + thirtyDaysInMillis
+
+        while (true) {
+            val now = System.currentTimeMillis()
+            val remainingMillis = permanentDeletionTime - now
+
+            if (remainingMillis <= 0) {
+                isOverdue = true
+                remainingText = "Deletion due / overdue"
+            } else {
+                isOverdue = false
+                val days = remainingMillis / (24 * 60 * 60 * 1000)
+                val hours = (remainingMillis % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
+                val minutes = (remainingMillis % (60 * 60 * 1000)) / (60 * 1000)
+
+                remainingText = if (days > 0) {
+                    "$days days, $hours hours"
+                } else if (hours > 0) {
+                    "$hours hours, $minutes mins"
+                } else {
+                    "$minutes mins"
+                }
+            }
+            delay(60_000) // Update every minute
+        }
+    }
+
+    Column(modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth()) {
+        Text(text = "Remaining Retention Time", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = remainingText,
+            style = MaterialTheme.typography.bodyLarge,
+            color = if (isOverdue) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+        )
     }
 }

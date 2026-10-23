@@ -81,6 +81,9 @@ enum class SortOrder {
  * The main gallery screen that displays media from the Vault.
  *
  * @param removedMediaStore Store containing media items scheduled for deletion. Must be the store shared with the viewer so its lifetime covers both screens.
+ * @param isDeletedMode When true, the gallery displays only media scheduled for deletion.
+ * @param onScheduledDeletionsClick Callback invoked when the user navigates to the scheduled deletions screen.
+ * @param onMediaClick Callback invoked when a media item is clicked. Receives the file ID, media type, and the scheduled deletion timestamp (if applicable).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,11 +93,14 @@ fun GalleryScreen(
     removedMediaStore: RemovedMediaStore,
     onSettingsClick: () -> Unit = {},
     onVaultSelectionClick: () -> Unit = {},
-    onMediaClick: (String, MediaType) -> Unit = { _, _ -> }
+    isDeletedMode: Boolean = false,
+    onScheduledDeletionsClick: () -> Unit = {},
+    onMediaClick: (String, MediaType, Long) -> Unit = { _, _, _ -> },
+    onBackClick: () -> Unit = {}
 ) {
     val application = LocalContext.current.applicationContext as Application
     val viewModel: GalleryViewModel = viewModel(
-        factory = GalleryViewModelFactory(application, settingsRepository, removedMediaStore)
+        factory = GalleryViewModelFactory(application, settingsRepository, removedMediaStore, isDeletedMode)
     )
 
     var selectedType by remember { mutableStateOf(MediaType.ALL) }
@@ -109,7 +115,14 @@ fun GalleryScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.app_name)) },
+                title = { Text(if (isDeletedMode) stringResource(R.string.scheduled_deletions_title) else stringResource(id = R.string.app_name)) },
+                navigationIcon = {
+                    if (isDeletedMode) {
+                        IconButton(onClick = onBackClick) {
+                            Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Back")
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     titleContentColor = MaterialTheme.colorScheme.onBackground
@@ -127,6 +140,15 @@ fun GalleryScreen(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
+                            if (!isDeletedMode) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.scheduled_deletions_menu_item)) },
+                                    onClick = {
+                                        showMenu = false
+                                        onScheduledDeletionsClick()
+                                    }
+                                )
+                            }
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.settings_title)) },
                                 onClick = {
@@ -299,7 +321,7 @@ fun GalleryScreen(
                         if (filteredData.isEmpty()) {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Text(
-                                    text = stringResource(R.string.gallery_nothing_in_vault),
+                                    text = if (isDeletedMode) stringResource(R.string.scheduled_deletions_empty) else stringResource(R.string.gallery_nothing_in_vault),
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -325,14 +347,14 @@ fun GalleryScreen(
 }
 
 @Composable
-fun MediaItem(item: ParsedMediaItem, onMediaClick: (String, MediaType) -> Unit = { _, _ -> }) {
+fun MediaItem(item: ParsedMediaItem, onMediaClick: (String, MediaType, Long) -> Unit = { _, _, _ -> }) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f) // Ensure strictly 1:1 squares
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable {
-                onMediaClick(item.id, item.type)
+                onMediaClick(item.id, item.type, item.timestamp)
             }
     ) {
         val placeholderRes = when (item.type) {

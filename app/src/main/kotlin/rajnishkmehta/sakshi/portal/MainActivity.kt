@@ -53,13 +53,27 @@ class MainActivity : ComponentActivity() {
                                 removedMediaStore = removedMediaStore,
                                 onSettingsClick = { backStack.add(SettingsScreenRoute) },
                                 onVaultSelectionClick = { backStack.add(VaultSelectionScreenRoute) },
-                                onMediaClick = { fileId, mediaType -> backStack.add(MediaViewerRoute(fileId, mediaType)) }
+                                onMediaClick = { fileId, mediaType, timestamp -> backStack.add(MediaViewerRoute(fileId, mediaType, false, timestamp)) },
+                                onScheduledDeletionsClick = { backStack.add(ScheduledDeletionsScreenRoute) }
+                            )
+                        }
+                        entry<ScheduledDeletionsScreenRoute> {
+                            GalleryScreen(
+                                settingsRepository = settingsRepository,
+                                removedMediaStore = removedMediaStore,
+                                onSettingsClick = { backStack.add(SettingsScreenRoute) },
+                                onVaultSelectionClick = { backStack.add(VaultSelectionScreenRoute) },
+                                onMediaClick = { fileId, mediaType, timestamp -> backStack.add(MediaViewerRoute(fileId, mediaType, true, timestamp)) },
+                                isDeletedMode = true,
+                                onBackClick = { backStack.removeLastOrNull() }
                             )
                         }
                         entry<MediaViewerRoute> { route ->
                             MediaViewerScreen(
                                 fileId = route.fileId,
                                 mediaType = route.mediaType,
+                                isDeletedMode = route.isDeletedMode,
+                                scheduledTime = route.scheduledTime,
                                 settingsRepository = settingsRepository,
                                 removedMediaStore = removedMediaStore,
                                 onBackClick = { backStack.removeLastOrNull() }
@@ -97,12 +111,19 @@ data object SettingsScreenRoute : NavKey
 @Serializable
 data object VaultSelectionScreenRoute : NavKey
 
+/**
+ * Navigation key for the Scheduled Deletions screen.
+ */
+@Serializable
+data object ScheduledDeletionsScreenRoute : NavKey
+
 
 /**
  * Navigation key for the Media Viewer screen.
  *
  * @property fileId The unique identifier of the media file to view.
  * @property mediaType The type of media (e.g., photo, video) for rendering logic.
+ * @property isDeletedMode Whether the viewer is opened from the scheduled deletions screen.
  */
 @Serializable
-data class MediaViewerRoute(val fileId: String, val mediaType: MediaType) : NavKey
+data class MediaViewerRoute(val fileId: String, val mediaType: MediaType, val isDeletedMode: Boolean = false, val scheduledTime: Long = -1L) : NavKey

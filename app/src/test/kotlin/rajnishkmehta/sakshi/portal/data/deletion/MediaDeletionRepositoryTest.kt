@@ -24,6 +24,7 @@ class MediaDeletionRepositoryTest {
                 assertTrue(store.removedIds.value.isEmpty())
                 SakshiResult.Success(Unit)
             },
+            recoverMedia = { SakshiResult.Success(Unit) },
             removedMediaStore = store
         )
 
@@ -36,6 +37,7 @@ class MediaDeletionRepositoryTest {
     fun `Vault rejection keeps the file visible`() = runBlocking {
         val repository = MediaDeletionRepository(
             deleteMedia = { SakshiResult.Failure(SakshiError.IpcError(message = "Media file is still being synchronized", cause = null)) },
+            recoverMedia = { SakshiResult.Success(Unit) },
             removedMediaStore = store
         )
 
@@ -50,6 +52,7 @@ class MediaDeletionRepositoryTest {
     fun `unexpected exception is reported as failure`() = runBlocking {
         val repository = MediaDeletionRepository(
             deleteMedia = { throw IllegalStateException("binder died") },
+            recoverMedia = { SakshiResult.Success(Unit) },
             removedMediaStore = store
         )
 

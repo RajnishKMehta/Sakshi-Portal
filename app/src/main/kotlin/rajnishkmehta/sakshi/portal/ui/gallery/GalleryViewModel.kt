@@ -52,11 +52,13 @@ data class ParsedMediaItem(
  * scheduled for deletion.
  *
  * @param removedMediaStore Source of media IDs to hide immediately.
+ * @param isDeletedMode True if this viewModel is for the Scheduled Deletions screen.
  */
 class GalleryViewModel(
     application: Application,
     private val settingsRepository: SettingsRepository,
-    private val removedMediaStore: RemovedMediaStore
+    private val removedMediaStore: RemovedMediaStore,
+    private val isDeletedMode: Boolean = false
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow<GalleryUiState>(GalleryUiState.Loading)
@@ -120,7 +122,7 @@ class GalleryViewModel(
 
                 // Concurrently run ping and listMedia
                 val pingDeferred = async { client.pingVault() }
-                val listMediaDeferred = async { client.listMedia() }
+                val listMediaDeferred = async { if (isDeletedMode) client.listDeletedMedia() else client.listMedia() }
                 val thumbnailDeferred = async { client.getThumbnail() }
 
                 val pingResult = pingDeferred.await()
@@ -214,16 +216,18 @@ class GalleryViewModel(
  * Factory for [GalleryViewModel].
  *
  * @param removedMediaStore Callers must provide the store shared with the viewer to ensure immediate sync of deleted files.
+ * @param isDeletedMode When true, configures the ViewModel to load data exclusively from the deleted media data source.
  */
 class GalleryViewModelFactory(
     private val application: Application,
     private val settingsRepository: SettingsRepository,
-    private val removedMediaStore: RemovedMediaStore
+    private val removedMediaStore: RemovedMediaStore,
+    private val isDeletedMode: Boolean = false
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(GalleryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return GalleryViewModel(application, settingsRepository, removedMediaStore) as T
+            return GalleryViewModel(application, settingsRepository, removedMediaStore, isDeletedMode) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

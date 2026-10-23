@@ -60,11 +60,20 @@ class MediaViewerViewModel(
     /** State of the schedule-deletion action. */
     val deletionState: StateFlow<MediaDeletionUiState> = _deletionState.asStateFlow()
 
+    private val _recoverState = MutableStateFlow<MediaDeletionUiState>(MediaDeletionUiState.Idle)
+
+    /** State of the recovery action for media scheduled for deletion. */
+    val recoverState: StateFlow<MediaDeletionUiState> = _recoverState.asStateFlow()
+
     private var sakshiClient: SakshiClient? = null
 
     private val mediaDeletionRepository = MediaDeletionRepository(
         deleteMedia = { fileId ->
             sakshiClient?.deleteMedia(fileId)
+                ?: SakshiResult.Failure(SakshiError.ServiceUnavailable("Vault is not connected"))
+        },
+        recoverMedia = { fileId ->
+            sakshiClient?.recoverMedia(fileId)
                 ?: SakshiResult.Failure(SakshiError.ServiceUnavailable("Vault is not connected"))
         },
         removedMediaStore = removedMediaStore
@@ -160,6 +169,45 @@ class MediaViewerViewModel(
     }
 
     /** Resets a failed deletion back to [MediaDeletionUiState.Idle] once its feedback was shown. */
+
+    /** Shows the recovery confirmation dialog for the loaded media file. */
+    fun requestRecovery() {
+        if (_uiState.value !is MediaViewerUiState.Success) return
+        if (_recoverState.value == MediaDeletionUiState.Idle) {
+            _recoverState.value = MediaDeletionUiState.Confirming
+        }
+    }
+
+    /** Closes the recovery confirmation dialog. */
+    fun cancelRecovery() {
+        if (_recoverState.value == MediaDeletionUiState.Confirming) {
+            _recoverState.value = MediaDeletionUiState.Idle
+        }
+    }
+
+    /** Asks Vault to recover the loaded media file after the user confirmed. */
+    fun confirmRecovery() {
+        val fileId = (_uiState.value as? MediaViewerUiState.Success)?.mediaDetails?.fileId ?: return
+        if (_recoverState.value != MediaDeletionUiState.Confirming) return
+        _recoverState.value = MediaDeletionUiState.InProgress
+
+        viewModelScope.launch {
+            _recoverState.value = when (val result = mediaDeletionRepository.recoverMediaAction(fileId)) {
+                rajnishkmehta.sakshi.portal.data.deletion.RecoverMediaResult.Recovered -> MediaDeletionUiState.Scheduled // Reuse Scheduled state to mean success
+                is rajnishkmehta.sakshi.portal.data.deletion.RecoverMediaResult.Failed -> {
+                    Log.e("MediaViewerViewModel", "Failed to recover media: ${result.message}")
+                    MediaDeletionUiState.Failed(result.message)
+                }
+            }
+        }
+    }
+
+    /** Resets a failed recovery back to [MediaDeletionUiState.Idle] once its feedback was shown. */
+    fun onRecoveryFailureShown() {
+        if (_recoverState.value is MediaDeletionUiState.Failed) {
+            _recoverState.value = MediaDeletionUiState.Idle
+        }
+    }
     fun onDeletionFailureShown() {
         if (_deletionState.value is MediaDeletionUiState.Failed) {
             _deletionState.value = MediaDeletionUiState.Idle
