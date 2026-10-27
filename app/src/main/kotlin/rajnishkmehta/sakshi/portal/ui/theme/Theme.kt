@@ -84,6 +84,14 @@ private val DarkColors = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+/**
+ * Defines the main Material 3 theme for the Portal application.
+ * Handles dynamic color (Material You) and light/dark theme switching.
+ *
+ * @param useDarkTheme True if the system is in dark mode or forced dark.
+ * @param useDynamicColor True to use Material You dynamic colors if supported (Android 12+).
+ * @param content The composable content to be wrapped in the theme.
+ */
 @Composable
 fun PortalTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),

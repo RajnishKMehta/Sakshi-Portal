@@ -87,6 +87,18 @@ enum class SortOrder {
  * @param onMediaClick Callback invoked when a media item is clicked. Receives the file ID, media type, and the capture/creation timestamp.
  */
 @OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Displays the main gallery screen for viewing media fetched from the Vault.
+ *
+ * @param settingsRepository Repository to access user settings.
+ * @param removedMediaStore Store to track files that should be optimistically hidden.
+ * @param onSettingsClick Callback to navigate to settings.
+ * @param onVaultSelectionClick Callback to navigate to vault selection.
+ * @param onMediaClick Callback when a media item is selected to view.
+ * @param onScheduledDeletionsClick Callback to navigate to the scheduled deletions view.
+ * @param isDeletedMode True if viewing media that is scheduled for deletion.
+ * @param onBackClick Callback to handle back navigation.
+ */
 @Composable
 fun GalleryScreen(
     modifier: Modifier = Modifier,
@@ -353,6 +365,12 @@ fun GalleryScreen(
     }
 }
 
+/**
+ * Displays an individual media item thumbnail within the gallery grid.
+ *
+ * @param item The parsed media item data to display.
+ * @param onMediaClick Callback invoked when this item is clicked.
+ */
 @Composable
 fun MediaItem(item: ParsedMediaItem, onMediaClick: (String, MediaType, Long) -> Unit = { _, _, _ -> }) {
     Box(

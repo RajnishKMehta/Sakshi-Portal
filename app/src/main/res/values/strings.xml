@@ -22,7 +22,7 @@
     <string name="settings_debug_logs_title">Debug Logs</string>
     <string name="settings_debug_logs_desc">View and export application logs</string>
     <string name="settings_debug_logs_button">Open</string>
-    <string name="settings_dynamic_color_title">Material You (Dynamic Colors)</string>
+    <string name="settings_dynamic_color_title">Dynamic Colors</string>
     <string name="settings_dynamic_color_desc">Use system colors for app theme</string>
     <string name="settings_select_vault_title">Select Vault App</string>
     <string name="settings_no_vault_selected">No vault selected</string>
@@ -87,4 +87,31 @@
     <string name="debug_logs_size_kb">%1$d KB</string>
     <string name="debug_logs_share_content_desc">Share</string>
     <string name="debug_logs_delete_content_desc">Delete</string>
+
+
+    <!-- App Lock UI -->
+    <string name="app_lock_prompt_title">Unlock Sākṣī Portal</string>
+    <string name="app_lock_no_credentials">Device credentials are not set up.</string>
+    <string name="app_lock_open_settings">Open Settings</string>
+    <string name="app_lock_retry_auth">Unlock</string>
+
+    <string name="app_lock_setup_title">Enable App Lock?</string>
+    <string name="app_lock_setup_message">Would you like to require authentication (biometrics or device PIN/pattern) before accessing Sākṣī Portal?\n\nYou can change this later in Settings.</string>
+    <string name="app_lock_setup_enable">Enable App Lock</string>
+    <string name="app_lock_setup_decline">Not Now</string>
+    <string name="app_lock_setup_error_no_credentials">You must configure a secure lock screen on your device before enabling App Lock.</string>
+
+    <!-- App Lock Settings -->
+    <string name="settings_security_title">Security</string>
+    <string name="settings_app_lock_title">App Lock</string>
+    <string name="settings_app_lock_desc">Require authentication to access Sākṣī Portal</string>
+    <string name="settings_timeout_title">Automatically lock after</string>
+    <string name="settings_timeout_desc">Time away before requiring authentication</string>
+
+    <string name="timeout_immediately">Immediately</string>
+    <string name="timeout_30s">30 seconds</string>
+    <string name="timeout_1m">1 minute</string>
+    <string name="timeout_5m">5 minutes</string>
+    <string name="timeout_10m">10 minutes</string>
+
 </resources>

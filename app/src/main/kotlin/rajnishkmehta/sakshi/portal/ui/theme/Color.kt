@@ -6,6 +6,11 @@ package rajnishkmehta.sakshi.portal.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+/**
+ * Color definitions for the application's light and dark themes.
+ * Uses Material 3 color system standards.
+ */
+
 // Light Theme Colors
 val md_theme_light_primary = Color(0xFF18287F)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)

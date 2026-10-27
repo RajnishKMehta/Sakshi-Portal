@@ -70,6 +70,13 @@ import rajnishkmehta.sakshi.portal.vault.VaultSelectionViewModel
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
 
 @OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Displays the screen for selecting a Vault application.
+ * Allows searching and picking an installed Vault to connect to.
+ *
+ * @param onAppSelected Callback invoked with the selected application's package name when connection is verified.
+ * @param onBackClick Callback invoked to navigate back to the previous screen.
+ */
 @Composable
 fun VaultSelectionScreen(
     viewModel: VaultSelectionViewModel = viewModel(),
@@ -245,6 +252,12 @@ fun VaultSelectionScreen(
     }
 }
 
+/**
+ * Displays a list of Vault applications or a placeholder if empty.
+ *
+ * @param apps List of discovered Vault applications.
+ * @param onAppClick Callback invoked when an application is clicked.
+ */
 @Composable
 fun AppList(apps: List<AppInfo>, onAppClick: (AppInfo) -> Unit) {
     // try { Log.i(tag = "VaultSelection", message = "AppList called with ${apps.size} apps") } catch (e: Exception) {}
@@ -263,6 +276,12 @@ fun AppList(apps: List<AppInfo>, onAppClick: (AppInfo) -> Unit) {
     }
 }
 
+/**
+ * Represents a single application item in the list, displaying its icon, name, and package name.
+ *
+ * @param app Information about the application.
+ * @param onClick Callback invoked when the item is clicked.
+ */
 @Composable
 fun AppItem(app: AppInfo, onClick: () -> Unit) {
     val context = LocalContext.current

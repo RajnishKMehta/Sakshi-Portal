@@ -59,10 +59,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
             if (keystore.exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
         }
+
         debug {
             isMinifyEnabled = false
 
@@ -70,6 +72,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-dev"
         }
@@ -82,46 +85,61 @@ android {
 }
 
 dependencies {
+    // Android basics
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+
+    // Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
+    // Lifecycle and ViewModel
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Storage and serialization
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.preferences.core)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.navigation3.runtime)
 
+    // Navigation
+    implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
+    // Image loading
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
 
+    // Media and image metadata
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui.compose.material3)
     implementation(libs.media3.inspector)
     implementation(libs.exifinterface)
 
+    // Project SDK and coroutine interoperability
     implementation(libs.sakshi.sdk)
     implementation(libs.kotlinx.coroutines.guava)
 
+    // security & authentication
+    implementation(libs.androidx.biometric)
+
+    // Debugging
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-
+    // Unit tests
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)
 
+    // Instrumented tests
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
-
-
 }
 
 tasks.withType<Test> {
