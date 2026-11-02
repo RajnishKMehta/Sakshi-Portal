@@ -49,7 +49,7 @@ class VaultSelectionViewModel(application: Application) : AndroidViewModel(appli
                 throw e
             } catch (e: Exception) {
                 // try { Log.e(tag = "VaultSelectionViewModel", message = "Error loading apps: ${e.message}") } catch (logE: Exception) {}
-                _uiState.value = UiState.Error(e.message ?: getApplication<Application>().getString(R.string.vault_selection_load_failed))
+                _uiState.value = UiState.Error(rajnishkmehta.sakshi.portal.ui.common.ErrorMapper.getMessage(getApplication(), e))
             }
         }
     }
@@ -97,7 +97,7 @@ class VaultSelectionViewModel(application: Application) : AndroidViewModel(appli
                 onResult(true, null)
             } else {
                 val err = result.errorOrNull()
-                val message = err?.message ?: getApplication<Application>().getString(R.string.unknown_error)
+                val message = rajnishkmehta.sakshi.portal.ui.common.ErrorMapper.getMessage(getApplication(), err)
                 // try { Log.e(tag = "VaultSelectionViewModel", message = "Verification failed: $message") } catch (e: Exception) {}
                 onResult(false, message)
             }

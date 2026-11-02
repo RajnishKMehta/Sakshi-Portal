@@ -114,4 +114,15 @@
     <string name="timeout_5m">5 minutes</string>
     <string name="timeout_10m">10 minutes</string>
 
+
+    <string name="error_vault_not_installed">Vault application is not installed on this device.</string>
+    <string name="error_service_unavailable">Vault service connection could not be established.</string>
+    <string name="error_service_disconnected">Vault service disconnected unexpectedly.</string>
+    <string name="error_permission_denied">Permission denied.</string>
+    <string name="error_recording_not_found">Media not found.</string>
+    <string name="error_invalid_payload">Invalid request payload.</string>
+    <string name="error_duplicate_file_id">Media already exists.</string>
+    <string name="error_source_file_inaccessible">Source file is inaccessible.</string>
+    <string name="error_ipc_error">Vault operation failed.</string>
+    <string name="error_unknown_sakshi">Unknown error: %1$s</string>
 </resources>

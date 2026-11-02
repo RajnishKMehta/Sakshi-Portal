@@ -110,11 +110,11 @@ class MediaViewerViewModel(
                 if (result.isSuccess) {
                     _uiState.value = MediaViewerUiState.Success(result.getOrNull()!!)
                 } else {
-                    _uiState.value = MediaViewerUiState.Error(result.errorOrNull()?.message ?: "Failed to load media")
+                    _uiState.value = MediaViewerUiState.Error(rajnishkmehta.sakshi.portal.ui.common.ErrorMapper.getMessage(getApplication(), result.errorOrNull()))
                 }
             } catch (e: Exception) {
                 Log.e("MediaViewerViewModel", "Error loading media: ${e.message}")
-                _uiState.value = MediaViewerUiState.Error(e.message ?: "Unknown error")
+                _uiState.value = MediaViewerUiState.Error(rajnishkmehta.sakshi.portal.ui.common.ErrorMapper.getMessage(getApplication(), e))
             }
         }
     }

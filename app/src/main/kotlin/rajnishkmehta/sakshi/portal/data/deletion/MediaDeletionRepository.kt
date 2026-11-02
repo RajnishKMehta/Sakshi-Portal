@@ -65,7 +65,7 @@ class MediaDeletionRepository(
                 removedMediaStore.markRemoved(fileId)
                 ScheduleDeletionResult.Scheduled
             }
-            is SakshiResult.Failure -> ScheduleDeletionResult.Failed(result.error.message ?: DEFAULT_ERROR)
+            is SakshiResult.Failure -> ScheduleDeletionResult.Failed(rajnishkmehta.sakshi.portal.ui.common.ErrorMapper.getMessage(null, result.error))
         }
     }
 

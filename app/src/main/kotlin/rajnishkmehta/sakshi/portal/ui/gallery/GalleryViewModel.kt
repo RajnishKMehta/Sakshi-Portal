@@ -168,13 +168,13 @@ class GalleryViewModel(
 
                 val listMediaResult = listMediaDeferred.await()
                 if (listMediaResult.isFailure) {
-                    _uiState.value = GalleryUiState.Error("Failed to list media: ${listMediaResult.errorOrNull()?.message}")
+                    _uiState.value = GalleryUiState.Error(rajnishkmehta.sakshi.portal.ui.common.ErrorMapper.getMessage(getApplication(), listMediaResult.errorOrNull()))
                     return@launch
                 }
 
                 val thumbnailResult = thumbnailDeferred.await()
                 if (thumbnailResult.isFailure) {
-                    _uiState.value = GalleryUiState.Error("Failed to get thumbnail template: ${thumbnailResult.errorOrNull()?.message}")
+                    _uiState.value = GalleryUiState.Error(rajnishkmehta.sakshi.portal.ui.common.ErrorMapper.getMessage(getApplication(), thumbnailResult.errorOrNull()))
                     return@launch
                 }
 
@@ -230,7 +230,7 @@ class GalleryViewModel(
                 throw e
             } catch (e: Exception) {
                 Log.e("GalleryViewModel", "Error loading media: ${e.message}")
-                _uiState.value = GalleryUiState.Error(e.message ?: "Unknown error")
+                _uiState.value = GalleryUiState.Error(rajnishkmehta.sakshi.portal.ui.common.ErrorMapper.getMessage(getApplication(), e))
             } finally {
                 if (loadJob == coroutineContext[Job]) {
                     _isRefreshing.value = false
