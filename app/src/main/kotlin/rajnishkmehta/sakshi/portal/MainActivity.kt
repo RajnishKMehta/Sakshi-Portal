@@ -34,6 +34,15 @@ import androidx.fragment.app.FragmentActivity
 import rajnishkmehta.sakshi.portal.ui.AppLockManager
 import rajnishkmehta.sakshi.portal.ui.AppLockScreen
 import rajnishkmehta.sakshi.portal.ui.AppLockSetupDialog
+import rajnishkmehta.sakshi.portal.ui.importing.MediaImportUi
+import rajnishkmehta.sakshi.portal.ui.importing.MediaImportViewModel
+import rajnishkmehta.sakshi.portal.ui.importing.MediaImportViewModelFactory
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
 
 /**
  * The main entry point Activity for the Portal application.
@@ -83,14 +92,39 @@ class MainActivity : FragmentActivity() {
                             entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
                             entryProvider = entryProvider {
                                 entry<GalleryScreenRoute> {
-                                    GalleryScreen(
-                                        settingsRepository = settingsRepository,
-                                        removedMediaStore = removedMediaStore,
-                                        onSettingsClick = { backStack.add(SettingsScreenRoute) },
-                                        onVaultSelectionClick = { backStack.add(VaultSelectionScreenRoute) },
-                                        onMediaClick = { fileId, mediaType, timestamp -> backStack.add(MediaViewerRoute(fileId, mediaType, false, timestamp)) },
-                                        onScheduledDeletionsClick = { backStack.add(ScheduledDeletionsScreenRoute) }
+                                    val application = applicationContext as android.app.Application
+                                    val importViewModel: MediaImportViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = MediaImportViewModelFactory(application, settingsRepository))
+                                    val importUiState by importViewModel.uiState.collectAsState()
+                                    val isMinimized by importViewModel.isMinimized.collectAsState()
+
+                                    val launcher = rememberLauncherForActivityResult(
+                                        contract = ActivityResultContracts.OpenMultipleDocuments(),
+                                        onResult = { uris ->
+                                            if (uris.isNotEmpty()) {
+                                                importViewModel.importMedia(uris)
+                                            }
+                                        }
                                     )
+
+                                    Box(modifier = Modifier.fillMaxSize()) {
+                                        GalleryScreen(
+                                            settingsRepository = settingsRepository,
+                                            removedMediaStore = removedMediaStore,
+                                            onSettingsClick = { backStack.add(SettingsScreenRoute) },
+                                            onAddToVaultClick = { launcher.launch(arrayOf("*/*")) },
+                                            onVaultSelectionClick = { backStack.add(VaultSelectionScreenRoute) },
+                                            onMediaClick = { fileId, mediaType, timestamp -> backStack.add(MediaViewerRoute(fileId, mediaType, false, timestamp)) },
+                                            onScheduledDeletionsClick = { backStack.add(ScheduledDeletionsScreenRoute) }
+                                        )
+
+                                        MediaImportUi(
+                                            uiState = importUiState,
+                                            isMinimized = isMinimized,
+                                            onMinimizeToggle = { importViewModel.setMinimized(!isMinimized) },
+                                            onDismiss = { importViewModel.dismiss() },
+                                            modifier = Modifier.align(Alignment.BottomCenter)
+                                        )
+                                    }
                                 }
                                 entry<ScheduledDeletionsScreenRoute> {
                                     GalleryScreen(

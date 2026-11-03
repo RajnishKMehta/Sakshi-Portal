@@ -105,6 +105,7 @@ fun GalleryScreen(
     settingsRepository: SettingsRepository,
     removedMediaStore: RemovedMediaStore,
     onSettingsClick: () -> Unit = {},
+    onAddToVaultClick: () -> Unit = {},
     onVaultSelectionClick: () -> Unit = {},
     isDeletedMode: Boolean = false,
     onScheduledDeletionsClick: () -> Unit = {},
@@ -153,6 +154,15 @@ fun GalleryScreen(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
+                            if (!isDeletedMode) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.add_to_vault)) },
+                                    onClick = {
+                                        showMenu = false
+                                        onAddToVaultClick()
+                                    }
+                                )
+                            }
                             if (!isDeletedMode) {
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.scheduled_deletions_menu_item)) },
