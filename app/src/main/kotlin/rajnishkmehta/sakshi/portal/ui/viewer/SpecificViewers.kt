@@ -7,6 +7,10 @@
 package rajnishkmehta.sakshi.portal.ui.viewer
 
 import android.net.Uri
+import android.provider.Settings
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -261,21 +265,38 @@ fun AudioViewer(uri: String) {
             contentAlignment = Alignment.Center
         ) {
             if (hasArtwork) {
-                if (!isPlaying) {
-                    // Show artwork while paused
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(artworkData)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = "Album Art",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize(0.8f)
-                    )
-                } else {
-                    // During playback, show decorative animated visualization
-                    AudioVisualization(isPlaying = true, modifier = Modifier.fillMaxSize(0.8f))
+                val resolver = LocalContext.current.contentResolver
+                val animationScale = remember(resolver) {
+                    Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f)
                 }
+                var currentRotation by remember { mutableStateOf(0f) }
+                LaunchedEffect(isPlaying, animationScale) {
+                    while (isPlaying && animationScale > 0f) {
+                        currentRotation += 0.5f
+                        if (currentRotation >= 360f) currentRotation = 0f
+                        delay(16) // ~60fps
+                    }
+                }
+
+                // Compute scale dynamically so that the rotated bounding box fits in the available dimensions.
+                // Assuming square content: scale = 1 / (abs(cos(angle)) + abs(sin(angle)))
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(artworkData)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "Album Art",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize(0.8f)
+                        .graphicsLayer {
+                            val rad = Math.toRadians(currentRotation.toDouble())
+                            val scale = 1f / (abs(cos(rad)) + abs(sin(rad))).toFloat()
+                            rotationZ = currentRotation
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                )
             } else {
                 // If album artwork does NOT exist: Keep the decorative bars/visualization visible even while paused.
                 AudioVisualization(isPlaying = isPlaying, modifier = Modifier.fillMaxSize(0.8f))

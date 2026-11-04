@@ -49,6 +49,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -117,8 +118,8 @@ fun GalleryScreen(
         factory = GalleryViewModelFactory(application, settingsRepository, removedMediaStore, isDeletedMode)
     )
 
-    var selectedType by remember { mutableStateOf(MediaType.ALL) }
-    var sortOrder by remember { mutableStateOf(SortOrder.NEW_FIRST) }
+    var selectedType by rememberSaveable { mutableStateOf(MediaType.ALL) }
+    var sortOrder by rememberSaveable { mutableStateOf(SortOrder.NEW_FIRST) }
     val uiState by viewModel.uiState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val pullToRefreshState = rememberPullToRefreshState()

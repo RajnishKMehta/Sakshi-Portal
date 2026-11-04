@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import rajnishkmehta.sakshi.portal.R
 import rajnishkmehta.sakshi.portal.data.SettingsRepository
@@ -30,8 +31,9 @@ fun AppLockSetupDialog(
     val coroutineScope = rememberCoroutineScope()
 
     AlertDialog(
+        properties = DialogProperties(dismissOnClickOutside = false),
         onDismissRequest = {
-            // Dismissed by touching outside, we just mark it setup
+            // Dismissed by back button, we just mark it setup
             coroutineScope.launch {
                 settingsRepository.setAppLockSetupCompleted(true)
                 onDismiss()
