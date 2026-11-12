@@ -41,6 +41,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -222,8 +223,12 @@ fun GalleryScreen(
                                 text = { Text(stringResource(R.string.user_guide_title)) },
                                 onClick = {
                                     showMenu = false
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(application.resources.getString(R.string.user_guide_url)).normalizeScheme())
-                                    context.startActivity(intent)
+                                    try {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(application.resources.getString(R.string.user_guide_url)).normalizeScheme())
+                                        context.startActivity(intent)
+                                    } catch (e: ActivityNotFoundException) {
+                                        Toast.makeText(application, application.resources.getString(R.string.vault_download_error), Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             )
                             if (!isDeletedMode) {
@@ -547,7 +552,7 @@ fun MediaItem(
                     .background(if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else Color.Transparent)
             ) {
                 Icon(
-                    painter = painterResource(android.R.drawable.checkbox_on_background),
+                    painter = painterResource(if (isSelected) android.R.drawable.checkbox_on_background else android.R.drawable.checkbox_off_background),
                     contentDescription = null,
                     tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.7f),
                     modifier = Modifier
