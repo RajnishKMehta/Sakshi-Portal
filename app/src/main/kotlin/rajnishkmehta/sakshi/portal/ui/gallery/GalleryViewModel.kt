@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -138,6 +139,15 @@ class GalleryViewModel(
                 .collectLatest { pkg ->
                     loadMedia(pkg)
                 }
+        }
+
+        viewModelScope.launch {
+            uiState.collect { state ->
+                val availableIds: Set<String> =
+                    (state as? GalleryUiState.Success)?.media?.mapTo(mutableSetOf()) { it.id }
+                        ?: emptySet()
+                _selectedIds.update { it intersect availableIds }
+            }
         }
     }
 
