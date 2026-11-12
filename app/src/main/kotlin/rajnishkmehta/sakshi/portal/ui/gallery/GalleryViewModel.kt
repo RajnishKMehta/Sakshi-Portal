@@ -5,6 +5,7 @@
 package rajnishkmehta.sakshi.portal.ui.gallery
 
 import android.app.Application
+import android.widget.Toast
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
@@ -13,10 +14,15 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import rajnishkmehta.sakshi.portal.data.deletion.MediaDeletionRepository
+import rajnishkmehta.sakshi.portal.data.deletion.BatchScheduleDeletionResult
+import rajnishkmehta.sakshi.portal.data.deletion.BatchRecoverMediaResult
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -26,7 +32,7 @@ import rajnishkmehta.sakshi.portal.data.deletion.RemovedMediaStore
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+
 import rajnishkmehta.sakshi.sdk.api.SakshiClient
 import rajnishkmehta.sakshi.sdk.api.SakshiClientConfig
 import rajnishkmehta.sakshi.portal.debug.DebugLogger as Log
@@ -92,9 +98,37 @@ class GalleryViewModel(
 
     private val _isRefreshing = MutableStateFlow(false)
 
+    private val _selectedIds = MutableStateFlow<Set<String>>(emptySet())
+    /**
+     * The set of currently selected media file IDs.
+     */
+    val selectedIds: StateFlow<Set<String>> = _selectedIds.asStateFlow()
+
+    private val mediaDeletionRepository = MediaDeletionRepository(
+        deleteMedia = { fileId ->
+            sakshiClient?.deleteMedia(fileId)
+                ?: rajnishkmehta.sakshi.sdk.api.SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("Vault is not connected"))
+        },
+        recoverMedia = { fileId ->
+            sakshiClient?.recoverMedia(fileId)
+                ?: rajnishkmehta.sakshi.sdk.api.SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("Vault is not connected"))
+        },
+        batchDeleteMedia = { fileIds ->
+            sakshiClient?.deleteMedia(fileIds)
+                ?: rajnishkmehta.sakshi.sdk.api.SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("Vault is not connected"))
+        },
+        batchRecoverMedia = { fileIds ->
+            sakshiClient?.recoverMedia(fileIds)
+                ?: rajnishkmehta.sakshi.sdk.api.SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("Vault is not connected"))
+        },
+        removedMediaStore = removedMediaStore
+    )
+
+
     /** Indicates whether a pull-to-refresh operation is currently in progress. */
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
+    private var currentVaultPackage: String? = null
     private var sakshiClient: SakshiClient? = null
     private var loadJob: Job? = null
 
@@ -106,8 +140,103 @@ class GalleryViewModel(
                     loadMedia(pkg)
                 }
         }
+
+        viewModelScope.launch {
+            uiState.collect { state ->
+                val availableIds: Set<String> =
+                    (state as? GalleryUiState.Success)?.media?.mapTo(mutableSetOf()) { it.id }
+                        ?: emptySet()
+                _selectedIds.update { it intersect availableIds }
+            }
+        }
     }
 
+    /**
+     * Toggles the selection state of a specific media item.
+     *
+     * @param fileId The unique identifier of the media item to toggle.
+     */
+    fun toggleSelection(fileId: String) {
+        _selectedIds.update { if (it.contains(fileId)) it - fileId else it + fileId }
+    }
+
+    /**
+     * Selects all media items in the provided list.
+     *
+     * @param mediaList The list of media items to select.
+     */
+    fun selectAll(mediaList: List<ParsedMediaItem>) {
+        _selectedIds.value = mediaList.map { it.id }.toSet()
+    }
+
+    /**
+     * Clears the current selection, deselecting all media items.
+     */
+    fun clearSelection() {
+        _selectedIds.value = emptySet()
+    }
+
+    /**
+     * Submits a batch deletion request for the currently selected media items.
+     * The operation is bound to the Vault from which the selection was obtained.
+     */
+    fun deleteSelectedMedia() {
+        val idsToDelete = _selectedIds.value.toSet()
+        val submittedVault = currentVaultPackage
+        val submittedClient = sakshiClient
+        if (idsToDelete.isEmpty() || submittedVault == null || submittedClient == null) return
+
+        viewModelScope.launch {
+            if (currentVaultPackage != submittedVault || sakshiClient !== submittedClient) {
+                Toast.makeText(getApplication(), "Vault connection changed, aborting.", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+
+            val result = mediaDeletionRepository.batchScheduleDeletion(idsToDelete.toList())
+            if (result is BatchScheduleDeletionResult.Success) {
+                // UI will automatically update via removedMediaStore
+                _selectedIds.update { it - result.successfulIds.toSet() }
+                if (result.failedIds.isNotEmpty()) {
+                    val errorMsg = result.failedIds.values.firstOrNull() ?: "Partial deletion failed"
+                    Toast.makeText(getApplication(), "Failed to delete some items: $errorMsg", Toast.LENGTH_LONG).show()
+                }
+            } else if (result is BatchScheduleDeletionResult.Failed) {
+                Log.e("GalleryViewModel", "Failed to delete batch: ${result.message}")
+                Toast.makeText(getApplication(), "Failed to delete batch: ${result.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    /**
+     * Submits a batch recovery request for the currently selected media items.
+     * The operation is bound to the Vault from which the selection was obtained.
+     */
+    fun recoverSelectedMedia() {
+        val idsToRecover = _selectedIds.value.toSet()
+        val submittedVault = currentVaultPackage
+        val submittedClient = sakshiClient
+        if (idsToRecover.isEmpty() || submittedVault == null || submittedClient == null) return
+
+        viewModelScope.launch {
+            if (currentVaultPackage != submittedVault || sakshiClient !== submittedClient) {
+                Toast.makeText(getApplication(), "Vault connection changed, aborting.", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+
+            val result = mediaDeletionRepository.batchRecoverMediaAction(idsToRecover.toList())
+            if (result is BatchRecoverMediaResult.Success) {
+                // UI will automatically update via removedMediaStore
+                _selectedIds.update { it - result.successfulIds.toSet() }
+                if (result.failedIds.isNotEmpty()) {
+                    val errorMsg = result.failedIds.values.firstOrNull() ?: "Partial recovery failed"
+                    Toast.makeText(getApplication(), "Failed to recover some items: $errorMsg", Toast.LENGTH_LONG).show()
+                }
+            } else if (result is BatchRecoverMediaResult.Failed) {
+                Log.e("GalleryViewModel", "Failed to recover batch: ${result.message}")
+                Toast.makeText(getApplication(), "Failed to recover batch: ${result.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
     /**
      * Triggers a refresh of the media list, showing the pull-to-refresh indicator.
      */
@@ -148,6 +277,10 @@ class GalleryViewModel(
                     vaultPackageName = vaultPackage,
                     connectionTimeoutMs = 5000L
                 )
+                if (currentVaultPackage != vaultPackage) {
+                    clearSelection()
+                    currentVaultPackage = vaultPackage
+                }
 
                 sakshiClient?.disconnect()
                 val client = SakshiClient.create(getApplication(), config)

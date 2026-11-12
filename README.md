@@ -7,11 +7,29 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache)](https://opensource.org/licenses/Apache-2.0)
 [![Kotlin](https://img.shields.io/badge/Lang-kotlin-blue.svg?logo=kotlin)](https://kotlinlang.org)
 [![Platform](https://img.shields.io/badge/Platform-Android_10+-green.svg?logo=android)](https://developer.android.com)
-[![Docs](https://img.shields.io/badge/Docs-Sākṣī_Documentation-blue.svg?logo=gitbook)](https://github.com/RajnishKMehta/Sakshi-Docs)
+[![Docs](https://img.shields.io/badge/Docs-Sākṣī_Documentation-blue.svg?logo=gitbook)](https://sakshi-docs.gitbook.io/)
+
+[How to use Sakshi?](https://sakshi-docs.gitbook.io/space/user-guide)
 
 </div>
 
 **Sākṣī Portal** ("Sākṣī (साक्षी)" = "Witness" in Sanskrit) is the user-facing application for the open-source Sākṣī Android ecosystem. It provides the interface for browsing, viewing, and managing media safely stored in the independent **[Sākṣī Vault](https://github.com/RajnishKMehta/Sakshi-Vault)**.
+
+
+## ⬇️ Direct Download
+
+[![Download APK](https://img.shields.io/badge/Download-Latest_APK-blue?style=for-the-badge&logo=android)](https://github.com/RajnishKMehta/Sakshi-Portal/releases/latest/download/Sakshi-Portal.apk)
+
+## 🛍️ Get via Stores
+
+<div align="center">
+<a href="https://github.com/RajnishKMehta/Sakshi-Portal/releases/latest"><img src="https://raw.githubusercontent.com/rubenpgrady/get-it-on-github/refs/heads/main/get-it-on-github.png" alt="Get it on GitHub" height="80"></a>
+<a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/RajnishKMehta/Sakshi-Portal"><img src="https://raw.githubusercontent.com/ImranR98/obtainium/main/assets/graphics/badge_obtainium.png" alt="Add to Obtainium" height="80"></a>
+  <!--
+<a href="https://f-droid.org/packages/rajnishkmehta.sakshi.portal"><img src="https://f-droid.org/badge/get-it-on.png" alt="Search on F-Droid" height="80"></a>
+-->
+
+</div>
 
 ---
 
@@ -70,3 +88,23 @@ Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before
 ## License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Built by
+
+<p align="center">
+	<a href="https://sakshi-docs.gitbook.io/space/about/about-the-developer">
+		<img
+      src="https://avatars.githubusercontent.com/u/172272341?s=460"
+      alt="Rajnish Kumar"
+      width="175"
+      style="border-radius: 50%; object-fit: cover;"
+    />
+	</a>
+	<p align="center">
+		<a href="https://sakshi-docs.gitbook.io/space/about/about-the-developer">
+			<strong>Rajnish Kumar</strong>
+		</a>
+	</p>
+</p>

@@ -110,6 +110,7 @@ class MainActivity : FragmentActivity() {
                                         GalleryScreen(
                                             settingsRepository = settingsRepository,
                                             removedMediaStore = removedMediaStore,
+                                            onAboutClick = { backStack.add(AboutScreenRoute) },
                                             onSettingsClick = { backStack.add(SettingsScreenRoute) },
                                             onAddToVaultClick = { launcher.launch(arrayOf("*/*")) },
                                             onVaultSelectionClick = { backStack.add(VaultSelectionScreenRoute) },
@@ -130,6 +131,7 @@ class MainActivity : FragmentActivity() {
                                     GalleryScreen(
                                         settingsRepository = settingsRepository,
                                         removedMediaStore = removedMediaStore,
+                                        onAboutClick = { backStack.add(AboutScreenRoute) },
                                         onSettingsClick = { backStack.add(SettingsScreenRoute) },
                                         onVaultSelectionClick = { backStack.add(VaultSelectionScreenRoute) },
                                         onMediaClick = { fileId, mediaType, timestamp -> backStack.add(MediaViewerRoute(fileId, mediaType, true, timestamp)) },
@@ -145,6 +147,11 @@ class MainActivity : FragmentActivity() {
                                         scheduledTime = route.scheduledTime,
                                         settingsRepository = settingsRepository,
                                         removedMediaStore = removedMediaStore,
+                                        onBackClick = { backStack.removeLastOrNull() }
+                                    )
+                                }
+                                entry<AboutScreenRoute> {
+                                    rajnishkmehta.sakshi.portal.ui.about.AboutScreen(
                                         onBackClick = { backStack.removeLastOrNull() }
                                     )
                                 }
@@ -173,6 +180,10 @@ class MainActivity : FragmentActivity() {
         }
     }
 }
+
+/** Navigation key for the Gallery screen. */
+@Serializable
+data object AboutScreenRoute : NavKey
 
 /** Navigation key for the Gallery screen. */
 @Serializable
