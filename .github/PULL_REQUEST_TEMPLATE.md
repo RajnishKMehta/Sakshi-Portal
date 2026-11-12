@@ -18,5 +18,5 @@ Let us know how we can test your changes locally, or what existing tests cover t
 
 ## Final checks!
 
-- [x] I've reviewed my own code.
+- [ ] I've reviewed my own code.
 - [ ] I've added comments to any tricky logic.
