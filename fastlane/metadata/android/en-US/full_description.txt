@@ -3,6 +3,7 @@
 <p>Sākṣī Portal is part of the Sākṣī ecosystem, a collection of independent Android components designed to work together through clearly defined responsibilities and communication interfaces.</p>
 
 <p>Portal integrates with the Sākṣī Vault architecture through the Sākṣī SDK, providing a companion application interface within the ecosystem.</p>
+<p>Portal requires Sākṣī Vault to be installed separately. Portal displays media stored in Vault, so it cannot show media without Vault. See https://sakshi-docs.gitbook.io/space for installation instructions.</p>
 
 <p><b>BUILT TO WORK WITH SĀKṢĪ VAULT</b></p>
 
