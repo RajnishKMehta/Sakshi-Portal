@@ -1,0 +1,61 @@
+<p><b>Sākṣī Portal – A Companion Application in the Sākṣī Ecosystem.</b></p>
+
+<p>Sākṣī Portal is part of the Sākṣī ecosystem, a collection of independent Android components designed to work together through clearly defined responsibilities and communication interfaces.</p>
+
+<p>Portal integrates with the Sākṣī Vault architecture through the Sākṣī SDK, providing a companion application interface within the ecosystem.</p>
+<p>Portal requires Sākṣī Vault to be installed separately. Portal displays media stored in Vault, so it cannot show media without Vault. See https://sakshi-docs.gitbook.io/space for installation instructions.</p>
+
+<p><b>BUILT TO WORK WITH SĀKṢĪ VAULT</b></p>
+
+<p>Sākṣī uses a dedicated storage component instead of requiring every client application to independently manage the entire storage workflow.</p>
+
+<p>Through the Sākṣī SDK, Portal can communicate with Vault using the ecosystem's local inter-process communication architecture.</p>
+
+<p><b>KEY ECOSYSTEM CAPABILITIES</b></p>
+
+<ul>
+<li><b>Vault Integration:</b> Connect with the Sākṣī Vault component through the Sākṣī SDK.</li>
+<li><b>Local Communication:</b> Use the ecosystem's local client-to-Vault communication architecture.</li>
+<li><b>Dedicated Storage Layer:</b> Work with Vault, which manages private on-device file storage and media records.</li>
+<li><b>Defined Component Boundaries:</b> Operate as an independent application while integrating with the shared Sākṣī architecture.</li>
+<li><b>Transfer Workflow Integration:</b> Use the documented client-to-Vault file-transfer architecture where supported by the application workflow.</li>
+</ul>
+
+<p><b>BROWSE, PLAY AND EXPORT VAULT MEDIA</b></p>
+
+<ul>
+<li><b>Browse Media:</b> Browse photos and videos stored in Sākṣī Vault through Portal's media interface.</li>
+<li><b>View and Play:</b> Open photos in the built-in viewer and play supported MP4 and crash-safe fMP4 videos.</li>
+<li><b>Export Media:</b> Export media from Vault to device storage using Android's MediaStore APIs.</li>
+</ul>
+
+<p><b>UNDERSTANDING THE SĀKṢĪ ARCHITECTURE</b></p>
+
+<p>Sākṣī is not a collection of unrelated applications. Each component has a defined role:</p>
+
+<ul>
+<li><b>Sākṣī Camera:</b> The camera application responsible for capturing photos and videos.</li>
+<li><b>Sākṣī Vault:</b> The dedicated storage component responsible for receiving and maintaining media.</li>
+<li><b>Sākṣī Portal:</b> A companion application integrated into the ecosystem.</li>
+<li><b>Sākṣī SDK:</b> The integration layer that enables trusted client applications to communicate with Vault.</li>
+</ul>
+
+<p>These components communicate through documented interfaces rather than relying on unrelated application-level storage implementations.</p>
+
+<p><b>PRIVACY-FIRST, LOCAL-FIRST DESIGN</b></p>
+
+<p>Sākṣī is built around the principle of keeping data management under the user's control.</p>
+
+<p>The documented Camera-to-Vault architecture uses local inter-process communication and Vault's private on-device storage. This design avoids requiring a cloud service for the local transfer workflow.</p>
+
+<p><b>EXPLORE THE SĀKṢĪ ECOSYSTEM</b></p>
+
+<p>Discover the architecture, component responsibilities, privacy principles and user documentation:</p>
+
+<p>https://sakshi-docs.gitbook.io/space</p>
+
+<p><b>Sākṣī Portal is one component of a larger system, built around defined responsibilities, local communication and a shared architectural foundation.</b></p>
+
+<p><b>PRIVACY POLICY</b></p>
+<p>Read our Privacy Policy:</p>
+<p>https://sakshi-docs.gitbook.io/space/security-privacy/privacy-policy</p>

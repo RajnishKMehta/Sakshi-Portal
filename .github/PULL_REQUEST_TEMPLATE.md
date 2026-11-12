@@ -20,5 +20,3 @@ Let us know how we can test your changes locally, or what existing tests cover t
 
 - [ ] I've reviewed my own code.
 - [ ] I've added comments to any tricky logic.
-- [ ] Existing tests still pass.
-- [ ] New tests pass (if applicable).
