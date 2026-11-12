@@ -24,7 +24,7 @@
 
 <div align="center">
 <a href="https://github.com/RajnishKMehta/Sakshi-Portal/releases/latest"><img src="https://raw.githubusercontent.com/rubenpgrady/get-it-on-github/refs/heads/main/get-it-on-github.png" alt="Get it on GitHub" height="80"></a>
-<a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/RajnishKMehta/Sakshi-Portal"><img src="https://raw.githubusercontent.com/ImranR98/obtainium/main/assets/graphics/badge_obtainium.png" alt="Add to Obtainium" height="80"></a>
+<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/RajnishKMehta/Sakshi-Portal"><img src="https://raw.githubusercontent.com/ImranR98/obtainium/main/assets/graphics/badge_obtainium.png" alt="Add to Obtainium" height="80"></a>
   <!--
 <a href="https://f-droid.org/packages/rajnishkmehta.sakshi.portal"><img src="https://f-droid.org/badge/get-it-on.png" alt="Search on F-Droid" height="80"></a>
 -->
