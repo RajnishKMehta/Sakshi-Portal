@@ -21,9 +21,9 @@ Do not skip any sections or start implementing changes without understanding the
 **Sakshi Vault is not accepting translations or localization contributions.** The application is intended to remain in its existing language, and contributions must not introduce support for additional languages.
 
 - Do not translate any application strings into other languages.
-- Do not create language-specific resource directories or files such as `02_vault/app/src/main/res/values-*/strings.xml`.
+- Do not create language-specific resource directories or files such as `app/src/main/res/values-*/strings.xml`.
 - Do not add, modify, or introduce localized string resources for additional languages.
-- Keep application strings in the existing default resource file: `02_vault/app/src/main/res/values/strings.xml`.
+- Keep application strings in the existing default resource file: `app/src/main/res/values/strings.xml`.
 - Do not introduce translation frameworks, localization configurations, or other translation-related changes.
 
 **Any Pull Request that introduces translations, additional language resources, or localization support will not be accepted or merged.** Please do not submit translation-related contributions.
