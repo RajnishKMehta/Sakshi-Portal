@@ -5,12 +5,13 @@ on:
 
   pull_request:
     paths-ignore:
-      - '**/*.md'
-      - '**/*.adoc'
-      - 'docs/**'
-      - 'README*'
+      - "**/*.md"
+      - "**/*.adoc"
+      - "docs/**"
+      - "README*"
       - 'LICENSE'
-      - '.gitignore'
+      - ".gitignore"
+      - "**/*.txt"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
