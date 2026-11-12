@@ -1,3 +1,7 @@
+import java.io.File
+import java.net.URI
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 /*
  * Copyright 2026 Rajnish Kumar
  * SPDX-License-Identifier: Apache-2.0
@@ -52,6 +56,7 @@ android {
 
     buildTypes {
         release {
+
             isMinifyEnabled = true
             isShrinkResources = true
 
@@ -144,4 +149,22 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+
+val downloadDevPhoto by tasks.registering(DownloadTask::class) {
+    url.set("https://github.com/RajnishKMehta/Sakshi-Docs/releases/download/1/dev_photo.webp")
+    outputFile.set(layout.buildDirectory.file("generated/res/dev_photo/drawable-nodpi/dev_photo.webp"))
+}
+
+android {
+    sourceSets {
+        getByName("main") {
+            res.srcDir(layout.buildDirectory.dir("generated/res/dev_photo").get().asFile)
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn(downloadDevPhoto)
 }

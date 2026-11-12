@@ -82,6 +82,14 @@ class MediaViewerViewModel(
             sakshiClient?.recoverMedia(fileId)
                 ?: SakshiResult.Failure(SakshiError.ServiceUnavailable("Vault is not connected"))
         },
+        batchDeleteMedia = { fileIds ->
+            sakshiClient?.deleteMedia(fileIds)
+                ?: SakshiResult.Failure(SakshiError.ServiceUnavailable("Vault is not connected"))
+        },
+        batchRecoverMedia = { fileIds ->
+            sakshiClient?.recoverMedia(fileIds)
+                ?: SakshiResult.Failure(SakshiError.ServiceUnavailable("Vault is not connected"))
+        },
         removedMediaStore = removedMediaStore
     )
 

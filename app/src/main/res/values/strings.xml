@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <!-- App Information -->
     <string name="app_name">Sākṣī Portal</string>
-
     <!-- Generic & Reusable -->
     <string name="back_content_description">Back</string>
     <string name="settings_title">Settings</string>
@@ -13,11 +11,9 @@
     <string name="scheduled_deletions_title">Scheduled Deletions</string>
     <string name="scheduled_deletions_empty">No scheduled deletions.</string>
     <string name="scheduled_deletions_menu_item">Recover Media</string>
-
     <!-- External URLs & Links -->
     <string name="vault_download_url">https://github.com/RajnishKMehta/Sakshi-Vault/releases/latest/download/Sakshi-Vault.apk</string>
     <string name="vault_download_error">No browser app found to download the Vault APK</string>
-
     <!-- Settings Screen -->
     <string name="settings_debug_logs_title">Debug Logs</string>
     <string name="settings_debug_logs_desc">View and export application logs</string>
@@ -26,7 +22,6 @@
     <string name="settings_dynamic_color_desc">Use system colors for app theme</string>
     <string name="settings_select_vault_title">Select Vault App</string>
     <string name="settings_no_vault_selected">No vault selected</string>
-
     <!-- Vault Selection / Connection -->
     <string name="vault_selection_title">Select Vault App</string>
     <string name="vault_selection_no_vault_app">No compatible Vault app found.</string>
@@ -40,7 +35,6 @@
     <string name="vault_not_found_message">Vault application not found or unavailable.</string>
     <string name="select_vault_action">Select Vault</string>
     <string name="download_vault_action">Download Vault</string>
-
     <!-- Gallery Screen -->
     <string name="filter_all">All</string>
     <string name="filter_photos">Photos</string>
@@ -54,7 +48,6 @@
     <string name="media_type_video">Video</string>
     <string name="media_type_audio">Audio</string>
     <string name="media_type_other">Other File</string>
-
     <!-- Media Viewer -->
     <string name="viewer_save_content_description">Save to device</string>
     <string name="viewer_save_success">Saved to %1$s</string>
@@ -66,13 +59,11 @@
     <string name="viewer_schedule_deletion_cancel">Cancel</string>
     <string name="viewer_schedule_deletion_success">Scheduled for permanent deletion after 30 days</string>
     <string name="viewer_schedule_deletion_failed">Could not schedule deletion: %1$s</string>
-
     <string name="viewer_recover_content_description">Recover media</string>
     <string name="viewer_recover_title">Recover this file?</string>
     <string name="viewer_recover_message">This will remove the file from scheduled deletions and restore it to the normal gallery.</string>
     <string name="viewer_recover_success">File recovered successfully</string>
     <string name="viewer_recover_failed">Could not recover file: %1$s</string>
-
     <!-- Debug Logs Activity -->
     <string name="debug_logs_share_title">Share Log File</string>
     <string name="debug_logs_empty_error">Log file is empty or does not exist</string>
@@ -87,34 +78,27 @@
     <string name="debug_logs_size_kb">%1$d KB</string>
     <string name="debug_logs_share_content_desc">Share</string>
     <string name="debug_logs_delete_content_desc">Delete</string>
-
-
     <!-- App Lock UI -->
     <string name="app_lock_prompt_title">Unlock Sākṣī Portal</string>
     <string name="app_lock_no_credentials">Device credentials are not set up.</string>
     <string name="app_lock_open_settings">Open Settings</string>
     <string name="app_lock_retry_auth">Unlock</string>
-
     <string name="app_lock_setup_title">Enable App Lock?</string>
     <string name="app_lock_setup_message">Would you like to require authentication (biometrics or device PIN/pattern) before accessing Sākṣī Portal?\n\nYou can change this later in Settings.</string>
     <string name="app_lock_setup_enable">Enable App Lock</string>
     <string name="app_lock_setup_decline">Not Now</string>
     <string name="app_lock_setup_error_no_credentials">You must configure a secure lock screen on your device before enabling App Lock.</string>
-
     <!-- App Lock Settings -->
     <string name="settings_security_title">Security</string>
     <string name="settings_app_lock_title">App Lock</string>
     <string name="settings_app_lock_desc">Require authentication to access Sākṣī Portal</string>
     <string name="settings_timeout_title">Automatically lock after</string>
     <string name="settings_timeout_desc">Time away before requiring authentication</string>
-
     <string name="timeout_immediately">Immediately</string>
     <string name="timeout_30s">30 seconds</string>
     <string name="timeout_1m">1 minute</string>
     <string name="timeout_5m">5 minutes</string>
     <string name="timeout_10m">10 minutes</string>
-
-
     <string name="error_vault_not_installed">Vault application is not installed on this device.</string>
     <string name="error_service_unavailable">Vault service connection could not be established.</string>
     <string name="error_service_disconnected">Vault service disconnected unexpectedly.</string>
@@ -125,4 +109,37 @@
     <string name="error_source_file_inaccessible">Source file is inaccessible.</string>
     <string name="error_ipc_error">Vault operation failed.</string>
     <string name="error_unknown_sakshi">Unknown error: %1$s</string>
+    <string name="about_title">About</string>
+    <string name="developer_title">Student &amp; Independent Developer</string>
+    <string name="developer_bio_new">Hi, I\'m Rajnish Kumar, an intermediate student and independent developer. I enjoy learning new technologies and building useful projects like Sākṣī. In my workflow, I extensively use AI-assisted development tools to explore ideas, solve complex problems, and learn new concepts.</string>
+    <string name="github">GitHub</string>
+    <string name="x_twitter">X (Twitter)</string>
+    <string name="instagram">Instagram</string>
+    <string name="gravatar">Gravatar</string>
+    <string name="contact">Contact</string>
+    <string name="know_more">Know More</string>
+    <string name="developer_name">Rajnish Kumar</string>
+    <string name="link_github">https://github.com/RajnishKMehta</string>
+    <string name="link_x">https://x.com/RajnishKMehta</string>
+    <string name="link_instagram">https://instagram.com/RajnishKMehta</string>
+    <string name="link_gravatar">https://gravatar.com/rajnishkmehta</string>
+    <string name="link_email">mailto:RajnishKMehta+Sakshi@proton.me</string>
+    <string name="link_know_more">https://sakshi-docs.gitbook.io/space/about/about-the-developer</string>
+    <string name="link_portal_repo">https://github.com/RajnishKMehta/Sakshi-Portal</string>
+    <string name="github_repository">GitHub Repository</string>
+    <string name="developed_by">Developed By</string>
+    <string name="donate">Donate</string>
+    <string name="donate_github">Sponsor on GitHub</string>
+    <string name="social_links">Social Links</string>
+    <string name="link_github_sponsors">https://github.com/sponsors/RajnishKMehta</string>
+    <string name="user_guide_title">Need Help?</string>
+    <string name="user_guide_url">https://sakshi-docs.gitbook.io/space/user-guide</string>
+    <string name="action_select_all">Select All</string>
+    <string name="action_unselect_all">Unselect All</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_recover">Recover</string>
+    <string name="selected_count">%1$d Selected</string>
+    <string name="dc_dev_email">Developer Email</string>
+    <string name="email_app_not_found_fallback">No email app found. Email address copied to clipboard.</string>
+    <string name="email_app_not_found">No email app found and couldn\'t copy email address.</string>
 </resources>

@@ -7,6 +7,19 @@
 package rajnishkmehta.sakshi.portal.ui.gallery
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
+
+
+
+
+import androidx.compose.material3.Checkbox
+
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -72,6 +85,8 @@ import android.widget.Toast
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.TextButton
+import androidx.activity.compose.BackHandler
+
 import coil3.compose.SubcomposeAsyncImage
 
 enum class SortOrder {
@@ -105,6 +120,7 @@ fun GalleryScreen(
     modifier: Modifier = Modifier,
     settingsRepository: SettingsRepository,
     removedMediaStore: RemovedMediaStore,
+    onAboutClick: () -> Unit,
     onSettingsClick: () -> Unit = {},
     onAddToVaultClick: () -> Unit = {},
     onVaultSelectionClick: () -> Unit = {},
@@ -113,7 +129,8 @@ fun GalleryScreen(
     onMediaClick: (String, MediaType, Long) -> Unit = { _, _, _ -> },
     onBackClick: () -> Unit = {}
 ) {
-    val application = LocalContext.current.applicationContext as Application
+    val context = LocalContext.current
+    val application = context.applicationContext as Application
     val viewModel: GalleryViewModel = viewModel(
         factory = GalleryViewModelFactory(application, settingsRepository, removedMediaStore, isDeletedMode)
     )
@@ -122,12 +139,51 @@ fun GalleryScreen(
     var sortOrder by rememberSaveable { mutableStateOf(SortOrder.NEW_FIRST) }
     val uiState by viewModel.uiState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val selectedIds by viewModel.selectedIds.collectAsState()
+    val isSelectionMode = selectedIds.isNotEmpty()
     val pullToRefreshState = rememberPullToRefreshState()
 
     var showMenu by remember { mutableStateOf(false) }
 
+    BackHandler(enabled = isSelectionMode) {
+        viewModel.clearSelection()
+    }
+
+
     Scaffold(
         modifier = modifier,
+        bottomBar = {
+            if (isSelectionMode) {
+                androidx.compose.material3.BottomAppBar {
+                    val currentMedia = (uiState as? GalleryUiState.Success)?.media ?: emptyList()
+                    val filtered = if (selectedType == MediaType.ALL) currentMedia else currentMedia.filter { it.type == selectedType }
+                    val allSelected = filtered.isNotEmpty() && filtered.all { it.id in selectedIds }
+
+                    TextButton(
+                        onClick = {
+                            if (allSelected) {
+                                viewModel.clearSelection()
+                            } else {
+                                viewModel.selectAll(filtered)
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(if (allSelected) stringResource(R.string.action_unselect_all) else stringResource(R.string.action_select_all))
+                    }
+
+                    Button(
+                        onClick = {
+                            if (isDeletedMode) viewModel.recoverSelectedMedia() else viewModel.deleteSelectedMedia()
+                        },
+                        enabled = selectedIds.isNotEmpty(),
+                        modifier = Modifier.weight(1f).padding(horizontal = 16.dp)
+                    ) {
+                        Text(if (isDeletedMode) stringResource(R.string.action_recover) else stringResource(R.string.action_delete))
+                    }
+                }
+            }
+        },
         topBar = {
             TopAppBar(
                 title = { Text(if (isDeletedMode) stringResource(R.string.scheduled_deletions_title) else stringResource(id = R.string.app_name)) },
@@ -155,6 +211,21 @@ fun GalleryScreen(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.about_title)) },
+                                onClick = {
+                                    showMenu = false
+                                    onAboutClick()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.user_guide_title)) },
+                                onClick = {
+                                    showMenu = false
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(application.resources.getString(R.string.user_guide_url)).normalizeScheme())
+                                    context.startActivity(intent)
+                                }
+                            )
                             if (!isDeletedMode) {
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.add_to_vault)) },
@@ -365,7 +436,24 @@ fun GalleryScreen(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 items(filteredData, key = { it.id }) { item ->
-                                    MediaItem(item, onMediaClick)
+                                    val isSelected = selectedIds.contains(item.id)
+                                    MediaItem(
+                                        item = item,
+                                        isSelectionMode = isSelectionMode,
+                                        isSelected = isSelected,
+                                        onClick = {
+                                            if (isSelectionMode) {
+                                                viewModel.toggleSelection(item.id)
+                                            } else {
+                                                onMediaClick(item.id, item.type, item.timestamp)
+                                            }
+                                        },
+                                        onLongClick = {
+                                            if (!isSelectionMode) {
+                                                viewModel.toggleSelection(item.id)
+                                            }
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -382,16 +470,25 @@ fun GalleryScreen(
  * @param item The parsed media item data to display.
  * @param onMediaClick Callback invoked when this item is clicked.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MediaItem(item: ParsedMediaItem, onMediaClick: (String, MediaType, Long) -> Unit = { _, _, _ -> }) {
+fun MediaItem(
+    item: ParsedMediaItem,
+    isSelectionMode: Boolean = false,
+    isSelected: Boolean = false,
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f) // Ensure strictly 1:1 squares
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable {
-                onMediaClick(item.id, item.type, item.timestamp)
-            }
+            .semantics { selected = isSelected }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
     ) {
         val placeholderRes = when (item.type) {
             MediaType.PHOTO -> R.drawable.ic_placeholder_photo
@@ -441,6 +538,24 @@ fun MediaItem(item: ParsedMediaItem, onMediaClick: (String, MediaType, Long) -> 
                     .align(Alignment.Center)
                     .size(32.dp)
             )
+        }
+
+        if (isSelectionMode) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else Color.Transparent)
+            ) {
+                Icon(
+                    painter = painterResource(android.R.drawable.checkbox_on_background),
+                    contentDescription = null,
+                    tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.7f),
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(4.dp)
+                        .size(24.dp)
+                )
+            }
         }
     }
 }

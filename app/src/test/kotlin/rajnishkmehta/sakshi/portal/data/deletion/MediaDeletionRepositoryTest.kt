@@ -25,6 +25,8 @@ class MediaDeletionRepositoryTest {
                 SakshiResult.Success(Unit)
             },
             recoverMedia = { SakshiResult.Success(Unit) },
+            batchDeleteMedia = { SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("")) },
+            batchRecoverMedia = { SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("")) },
             removedMediaStore = store
         )
 
@@ -38,6 +40,8 @@ class MediaDeletionRepositoryTest {
         val repository = MediaDeletionRepository(
             deleteMedia = { SakshiResult.Failure(SakshiError.IpcError(message = "Media file is still being synchronized", cause = null)) },
             recoverMedia = { SakshiResult.Success(Unit) },
+            batchDeleteMedia = { SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("")) },
+            batchRecoverMedia = { SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("")) },
             removedMediaStore = store
         )
 
@@ -53,6 +57,8 @@ class MediaDeletionRepositoryTest {
         val repository = MediaDeletionRepository(
             deleteMedia = { throw IllegalStateException("binder died") },
             recoverMedia = { SakshiResult.Success(Unit) },
+            batchDeleteMedia = { SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("")) },
+            batchRecoverMedia = { SakshiResult.Failure(rajnishkmehta.sakshi.sdk.api.SakshiError.ServiceUnavailable("")) },
             removedMediaStore = store
         )
 
