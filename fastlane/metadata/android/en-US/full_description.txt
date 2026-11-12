@@ -21,6 +21,14 @@
 <li><b>Transfer Workflow Integration:</b> Use the documented client-to-Vault file-transfer architecture where supported by the application workflow.</li>
 </ul>
 
+<p><b>BROWSE, PLAY AND EXPORT VAULT MEDIA</b></p>
+
+<ul>
+<li><b>Browse Media:</b> Browse photos and videos stored in Sākṣī Vault through Portal's media interface.</li>
+<li><b>View and Play:</b> Open photos in the built-in viewer and play supported MP4 and crash-safe fMP4 videos.</li>
+<li><b>Export Media:</b> Export media from Vault to device storage using Android's MediaStore APIs.</li>
+</ul>
+
 <p><b>UNDERSTANDING THE SĀKṢĪ ARCHITECTURE</b></p>
 
 <p>Sākṣī is not a collection of unrelated applications. Each component has a defined role:</p>
