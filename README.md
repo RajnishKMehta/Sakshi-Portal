@@ -16,12 +16,9 @@
 **Sākṣī Portal** ("Sākṣī (साक्षी)" = "Witness" in Sanskrit) is the user-facing application for the open-source Sākṣī Android ecosystem. It provides the interface for browsing, viewing, and managing media safely stored in the independent **[Sākṣī Vault](https://github.com/RajnishKMehta/Sakshi-Vault)**.
 
 
-## ⬇️ Direct Download
+## 📥 Download Now
 
-[![Download APK](https://img.shields.io/badge/Download-Latest_APK-blue?style=for-the-badge&logo=android)](https://github.com/RajnishKMehta/Sakshi-Portal/releases/latest/download/Sakshi-Portal.apk)
-
-## 🛍️ Get via Stores
-
+[![Direct Download APK](https://img.shields.io/badge/Download-Latest_APK-blue?style=for-the-badge&logo=android)](https://github.com/RajnishKMehta/Sakshi-Portal/releases/latest/download/Sakshi-Portal.apk)
 <div align="center">
 <a href="https://github.com/RajnishKMehta/Sakshi-Portal/releases/latest"><img src="https://raw.githubusercontent.com/rubenpgrady/get-it-on-github/refs/heads/main/get-it-on-github.png" alt="Get it on GitHub" height="80"></a>
 <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/RajnishKMehta/Sakshi-Portal"><img src="https://raw.githubusercontent.com/ImranR98/obtainium/main/assets/graphics/badge_obtainium.png" alt="Add to Obtainium" height="80"></a>
