@@ -92,6 +92,12 @@ android {
         includeInApk = false
         includeInBundle = false
     }
+
+    packaging {
+        jniLibs {
+            keepDebugSymbols += "**/libdatastore_shared_counter.so"
+        }
+    }
 }
 
 dependencies {
