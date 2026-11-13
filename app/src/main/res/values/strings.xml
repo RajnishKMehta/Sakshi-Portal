@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Sākṣī Portal</string>
+    <string name="app_name">Sakshi Portal</string>
     <!-- Generic & Reusable -->
     <string name="back_content_description">Back</string>
     <string name="settings_title">Settings</string>
