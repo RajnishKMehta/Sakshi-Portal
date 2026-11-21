@@ -7,6 +7,10 @@ updates:
       interval: monthly
     target-branch: dependency
     open-pull-requests-limit: 10
+    groups:
+      github-actions-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: gradle
     directory: "/"
@@ -15,3 +19,7 @@ updates:
       day: saturday
     target-branch: dependency
     open-pull-requests-limit: 25
+    groups:
+      gradle-dependencies:
+        patterns:
+          - "*"
